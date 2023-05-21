@@ -7,6 +7,11 @@ Es necesario tener instalado virtualenv, para esto:
 pip install virtualenv
 ```
 
+Despues es necesario crear un entorno virtual:
+```
+virtualenv -p python3 env
+```
+
 Despues de este paso se necesita inciar el entorno virtual con el siguiente comando: 
 ```
 /env/scripts/activate
