@@ -6,7 +6,7 @@ import apyori
 class Apriori():
     def __init__(self) -> None:
         self.frecuencia = None
-        self.dataset = "movies.csv"
+        self.dataset = "datos_prueba/apriori/movies.csv"
         self.soporte = None
         self.elevacion = None
         self.confianza = None
