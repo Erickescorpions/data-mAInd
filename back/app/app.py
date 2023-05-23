@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 from AprioriController import AprioriController
+from MetricasDistanciaController import MetricasDistanciaController
 
 ## creamos la aplicacion
 app = Flask(__name__)
 aprioriController = None
+metricasController = None
 
 @app.route('/')
 def index():
@@ -38,6 +40,24 @@ def getParametrosApriori():
 def executeApriori():
     aprioriController = AprioriController()
     res = aprioriController.execute()
+    return jsonify(res)
+
+'''
+    ruta para agregar un valor a la metrica
+'''
+@app.route('/api/metricas/metrica', methods=['POST'])
+def agregarMetrica():
+    metricasController = MetricasDistanciaController()
+    res = metricasController.setMetrica(request)
+    return jsonify(res)
+
+'''
+    ruta para obtener las distancias
+'''
+@app.route('/api/metricas/execute', methods=['GET'])
+def executeMetricas():
+    metricasController = MetricasDistanciaController()
+    res = metricasController.execute()
     return jsonify(res)
 
 if __name__ == '__main__':
