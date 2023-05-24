@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 from Apriori import Apriori
 from MetricasDistancia import MetricasDistancia
+from flask_cors import CORS
 
 ## creamos la aplicacion
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.route('/')
 def index():
