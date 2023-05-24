@@ -1,7 +1,8 @@
 <script setup>
-import useValidate from '@vuelidate/core'
-import { required, numeric } from '@vuelidate/validators'
-import axios from 'axios'
+import useValidate from '@vuelidate/core';
+import { required, numeric } from '@vuelidate/validators';
+import axios from 'axios';
+import Chart from 'chart.js/auto';
 </script>
 
 <script>
@@ -33,9 +34,60 @@ export default {
 
             if(!this.v$.$error) {
                 axios.post('http://127.0.0.1:8000/api/apriori', this.parametros)
-                    .then(response => console.log(response))
+                    .then(response => this.generandoGraficas(response))
                     .catch(error => console.log(error))
             }
+        },
+
+        generandoGraficas(res) {
+            let frecuencia = res.data.frecuencia;
+            let x_labels_fre = [];
+            let y_labels_fre = [];
+            let length = Object.keys(frecuencia).length;
+            //console.log(typeof(frecuencia));
+
+            for(let i = 0; i < length; i++) {
+                //console.log(frecuencia[i]['frecuencia']);
+                x_labels_fre.push(frecuencia[i]['pelicula']);
+                y_labels_fre.push(frecuencia[i]['frecuencia'])
+            }
+
+            const canvas_frecuencia = document.getElementById('frecuencia');
+
+            new Chart(canvas_frecuencia, {
+                type: 'bar',
+                data: {
+                labels: x_labels_fre,
+                datasets: [{
+                    label: 'Frecuencia',
+                    data: y_labels_fre,
+                    borderWidth: 10
+                }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    layout: {
+                        padding: 20
+                    },
+                    // Elements options apply to all of the options unless overridden in a dataset
+                    // In this case, we are setting the border of each horizontal bar to be 2px wide
+                    elements: {
+                        bar: {
+                            borderWidth: 2,
+                        }
+                    },
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Frecuencia de los datos en cada regla de asociacion'
+                        }
+                    }
+                }
+            });
         }
     }
 }
@@ -67,12 +119,13 @@ export default {
     </div>
 
     <div id="graficas">
-        <div id="frecuencia">
+        <canvas id="frecuencia">
 
-        </div>
-        <div id="reglas">
+        </canvas>
 
-        </div>
+        <canvas id="reglas">
+
+        </canvas>
     </div>
 </template>
 
