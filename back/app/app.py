@@ -47,7 +47,7 @@ def executeApriori():
     metrica y el archivo y regresa un json con los datos
     estandarizados y la matriz de distancias
 '''
-# @app.route('/api/metricas', methods=['GET'])
+@app.route('/api/metricas', methods=['POST'])
 def executeMetricas():
     valores_metricas = ['euclidean', 'chebyshev', 'cityblock', 'minkowski']
     metrica = request.json['metrica']
