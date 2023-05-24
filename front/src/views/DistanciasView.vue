@@ -1,4 +1,10 @@
+<script setup>
+import { Apriori } from '../components/Distancias.vue'
+</script> -->
+
 <template>
-    <div>Distancias</div>
-    
+  <main>
+    <Distancias />
+  </main>
 </template>
+
