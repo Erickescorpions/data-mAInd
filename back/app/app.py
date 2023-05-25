@@ -20,29 +20,41 @@ def index():
 @app.route('/api/apriori', methods=['POST'])
 def executeApriori():
     try:
-        if not request.json['confianza'] or not request.json['elevacion'] or not request.json['soporte']:
+        if not request.form['confianza'] or not request.form['elevacion'] or not request.form['soporte']:
             return {
                 "sucess": False,
                 "mensaje": "Es necesario proporcionar los parametros para ejecutar el algoritmo."
             }
         
         parametros = {
-            "confianza": float(request.json['confianza']),
-            "elevacion": float(request.json['elevacion']),
-            "soporte": float(request.json['soporte'])
+            "confianza": float(request.form['confianza']),
+            "elevacion": float(request.form['elevacion']),
+            "soporte": float(request.form['soporte'])
         }
+        
+        file = None
+        
+        if 'file' in request.files:
+            file = request.files['file']
 
-        # file = 
-
-        res = Apriori.execute(parametros)
+        if not file:
+            res = Apriori.execute(parametros)
+        else: 
+            res = Apriori.execute(parametros, file)
+        
         return jsonify(res)
         
-    
+    except KeyError:
+        return jsonify({
+            "sucess": False,
+            "message": "Los parametros que se necesitan recibir son ['confianza', 'elevacion', 'soporte' y 'file']."
+        })
+
     except ValueError:
-        return {
+        return jsonify({
             "sucess": False,
             "message": "Los parametros ['confianza', 'elevacion' y 'soporte'] deben de ser de tipo flotante."
-        }
+        })
 
 '''
     ruta para obtener las distancias, recibe el tipo de 

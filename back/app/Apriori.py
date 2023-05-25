@@ -5,9 +5,15 @@ import apyori
 
 class Apriori():
     @staticmethod
-    def execute(parametros, dataset="datos_prueba/apriori/movies.csv"):         
+    def execute(parametros, file=None, dataset="datos_prueba/apriori/movies.csv"):         
         #ejecucion del algoritmo 
-        data = pd.read_csv(dataset)
+        
+        if file:
+            print('recibiendo archivo')
+            data = pd.read_csv(file)
+        else:
+            print('default')
+            data = pd.read_csv(dataset)
 
         transacciones = data.values.reshape(-1).tolist()
         lista = pd.DataFrame(transacciones)
