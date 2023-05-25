@@ -9,10 +9,17 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
+
     {
       path: '/apriori',
       name: 'apriori',
       component: () => import('../views/AprioriView.vue')
+    },
+
+    {
+      path: '/distancias',
+      name : 'distancias',
+      component: () => import( '../views/DistanciasView.vue' )
     }
   ]
 })
