@@ -19,7 +19,8 @@ export default {
                 error: false,
                 mensaje: ""
             },
-            chart_frecuencia: null
+            chart_frecuencia: null,
+            reglas: null
         }
     },
 
@@ -51,7 +52,7 @@ export default {
 
             if(!this.v$.$error) {
                 axios.post('http://127.0.0.1:8000/api/apriori', formData)
-                    .then(response => this.generandoGraficas(response))
+                    .then(response => this.mostrandoDatos(response))
                     .catch(error => console.log(error));
             }
         },
@@ -74,7 +75,14 @@ export default {
             }
         }, 
 
-        generandoGraficas(res) {
+        mostrandoDatos(res) {
+            console.log(res);
+            if(this.reglas) {
+                this.reglas = null;
+            }
+
+            this.reglas = res.data.reglas;
+
             if(this.chart_frecuencia) {
                 this.chart_frecuencia.destroy();
             }
@@ -173,9 +181,26 @@ export default {
 
         </canvas>
 
-        <canvas id="reglas">
-
-        </canvas>
+        <div v-if="reglas">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Regla</th>
+                        <th>Soporte</th>
+                        <th>Confianza</th>
+                        <th>Elevacion</th>
+                    </tr>
+                </thead>
+                <tbody v-for="regla in reglas">
+                    <tr>
+                        <th>{{ regla.regla.toString() }}</th>
+                        <th>{{ regla.parametros.soporte.toFixed(4) }}</th>
+                        <th>{{ regla.parametros.confianza.toFixed(4) }}</th>
+                        <th>{{ regla.parametros.elevacion.toFixed(4) }}</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
