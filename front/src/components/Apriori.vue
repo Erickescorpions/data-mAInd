@@ -63,7 +63,7 @@ export default {
 
             if(file) {
                 const fileExtension = file.name.split('.').pop();
-                console.log(fileExtension);
+                //console.log(fileExtension);
                 if (!extensionesPermitidas.includes(fileExtension)) {
                     // El archivo no tiene la extensión CSV
                     this.error_archivo.error = true;

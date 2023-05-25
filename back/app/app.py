@@ -47,7 +47,7 @@ def executeApriori():
     except KeyError:
         return jsonify({
             "sucess": False,
-            "message": "Los parametros que se necesitan recibir son ['confianza', 'elevacion', 'soporte' y 'file']."
+            "message": "Los parametros que se necesitan recibir son ['confianza', 'elevacion', 'soporte' y opcionalmente un archivo como 'file']."
         })
 
     except ValueError:
@@ -63,17 +63,36 @@ def executeApriori():
 '''
 @app.route('/api/metricas', methods=['POST'])
 def executeMetricas():
-    valores_metricas = ['euclidean', 'chebyshev', 'cityblock', 'minkowski']
-    metrica = request.json['metrica']
-    
-    if metrica not in valores_metricas: 
-        return {
-            "sucess": False,
-            "message": f"No se reconoce la metrica {metrica}, por favor envia una metrica que este dentro de los siguiente valores: {valores_metricas}"
-        }
+    try:
+        valores_metricas = ['euclidean', 'chebyshev', 'cityblock', 'minkowski']
+        
+        metrica = ''
 
-    res = MetricasDistancia.execute(metrica)
-    return jsonify(res)
+        if 'metrica' in request.form:
+            metrica = request.form['metrica']
+        
+        if metrica not in valores_metricas: 
+            return jsonify({
+                "sucess": False,
+                "message": f"No se reconoce la metrica {metrica}, por favor envia una metrica que este dentro de los siguiente valores: {valores_metricas}"
+            });
+
+        file = None
+            
+        if 'file' in request.files:
+            file = request.files['file']
+
+        if not file:
+            res = MetricasDistancia.execute(metrica)
+        else: 
+            res = MetricasDistancia.execute(metrica, file=file)
+
+        return jsonify(res)
+    except KeyError:
+        return jsonify({
+            "sucess": False,
+            "message": "Los parametros que se necesitan recibir son ['metrica' y opcionalmente un archivo como 'file]"
+        })
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

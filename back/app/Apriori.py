@@ -9,10 +9,10 @@ class Apriori():
         #ejecucion del algoritmo 
         
         if file:
-            print('recibiendo archivo')
+            #print('recibiendo archivo')
             data = pd.read_csv(file)
         else:
-            print('default')
+            #print('default')
             data = pd.read_csv(dataset)
 
         transacciones = data.values.reshape(-1).tolist()

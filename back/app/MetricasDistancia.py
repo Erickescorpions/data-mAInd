@@ -5,16 +5,24 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 class MetricasDistancia():
     @staticmethod
-    def execute(metrica, dataset="datos_prueba/metricas/Hipoteca.csv"):         
+    def execute(metrica, file=None, dataset="datos_prueba/metricas/Hipoteca.csv"):         
         # ejecucion del algoritmo 
-        data = pd.read_csv(dataset)
+        if file:
+            #print('recibiendo archivo')
+            data = pd.read_csv(file)
+        else:
+            #print('default')
+            data = pd.read_csv(dataset)
+
+        # eliminando columnas no numericas
+        columnas_no_numericas = data.select_dtypes(exclude='number').columns
+        data_df = data.drop(columnas_no_numericas, axis=1)
 
         # estandarizacion de datos
         estandarizar = StandardScaler()
-        # Se calculan la media y desviación y se escalan los datos
-        data_estandarizada = estandarizar.fit_transform(data)
+        data_estandarizada = estandarizar.fit_transform(data_df)
 
-        print(data_estandarizada)
+        #print(data_estandarizada)
 
         # matriz de distancias
         dst = cdist(data_estandarizada, data_estandarizada, metric=metrica)
