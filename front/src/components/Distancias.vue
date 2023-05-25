@@ -10,6 +10,12 @@ import Chart from 'chart.js/auto';
                 parametros:{
                     metrica : ''
                 },
+
+                error_archivo: {
+                    error: false,
+                    mensaje: ""
+                },
+
                 respuesta: null,
                 col_row : 0,
                 bandera : false
@@ -25,10 +31,35 @@ import Chart from 'chart.js/auto';
 
         methods: {
             enviandoDatos(){
-                axios.post( 'http://127.0.0.1:8000/api/metricas', this.parametros )
+                 // obtenemos el dataset proporcionado
+                const file = this.$refs.fileInput.files[0]
+
+                const formData = new FormData() 
+                formData.append('file', file)
+
+                formData.append( 'metrica', this.parametros.metrica )
+                axios.post( 'http://127.0.0.1:8000/api/metricas', formData )
                     .then( response => this.guardandoDatos( response ) )
                     .catch( error => console.log( error ) )
             },
+
+            validandoArchivo(event) {
+                const file = event.target.files[0];
+                const extensionesPermitidas = ['csv'];
+
+                if(file) {
+                    const fileExtension = file.name.split('.').pop();
+                    console.log(fileExtension);
+                    if (!extensionesPermitidas.includes(fileExtension)) {
+                        // El archivo no tiene la extensión CSV
+                        this.error_archivo.error = true;
+                        this.error_archivo.mensaje = `El archivo solo puede incluir las siguientes extensiones [${extensionesPermitidas.toString()}]`
+
+                        // limpiamos el input del archivo
+                        this.$refs.fileInput.value = '';
+                    }
+                }
+            }, 
 
             guardandoDatos( res ){
                 this.respuesta = res.data.distancias
@@ -37,9 +68,9 @@ import Chart from 'chart.js/auto';
             },
 
             generandoTabla( data ){
-                if (Array.isArray(data)) {
+                if ( Array.isArray( data ) ) {
 
-                    const colRow = parseInt(this.col_row); // Convertir a entero
+                    const colRow = parseInt( this.col_row ); // Convertir a entero
 
                     // Formatear los datos en una tabla HTML
                     let tabla = '<table>';
@@ -47,18 +78,18 @@ import Chart from 'chart.js/auto';
 
                     // Agregar encabezado de columnas
                     tabla += '<th></th>';
-                    for (let i = 0; i < colRow; i++) {
+                    for ( let i = 0; i < colRow; i++ ) {
                         tabla += `<th>${i}</th>`;
                     }
 
                     tabla += '</tr></thead>';
                     tabla += '<tbody>';
 
-                    for (let i = 0; i < colRow; i++) {
+                    for ( let i = 0; i < colRow; i++ ) {
                         tabla += '<tr>';
-                        tabla += `<td><strong>${i}</strong></td>`; // Agregar encabezado de fila
+                        tabla += `<td><strong>${ i }</strong></td>`; // Agregar encabezado de fila
                         for (let j = 0; j < colRow; j++) {
-                            tabla += `<td>${data[i][j]}</td>`;
+                            tabla += `<td>${ data[i][j] }</td>`;
                         }
 
                         tabla += '</tr>';
@@ -81,6 +112,15 @@ import Chart from 'chart.js/auto';
     <h1 class="titulo">Metricas de distancias</h1>
     <form @submit.prevent="enviandoDatos">
         <div class="contenedor">        
+            <p>Selecciona un dataset (*extension csv)</p>
+            <div class="slector">
+                <label for="dataset">Dataset: </label>
+                <input type="file" ref="fileInput" @change="validandoArchivo"/>
+                <span v-if="error_archivo.error">
+                    {{ error_archivo.mensaje }}
+                </span>
+            </div>
+
             <div class="selector">
                 <label for=""><strong>Seleccione la metrica de distancia que desea utilizar:</strong></label>
                 <br>
