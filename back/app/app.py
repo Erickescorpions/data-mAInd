@@ -56,6 +56,30 @@ def executeApriori():
             "message": "Los parametros ['confianza', 'elevacion' y 'soporte'] deben de ser de tipo flotante."
         })
 
+
+'''
+    ruta que devuelve la frecuencia de los datos de un .csv
+'''
+@app.route('/api/apriori/frecuencia', methods=['POST'])
+def getFrecuencia():
+    try:
+        file = None
+        
+        if 'file' in request.files:
+            file = request.files['file']
+
+        if not file:
+            res = Apriori.frecuencia()
+        else: 
+            res = Apriori.frecuencia(file)
+
+        return jsonify(res)
+    except KeyError:
+        return jsonify({
+            "sucess": False,
+            "message": 'Hubo un error.'
+        })
+
 '''
     ruta para obtener las distancias, recibe el tipo de 
     metrica y el archivo y regresa un json con los datos

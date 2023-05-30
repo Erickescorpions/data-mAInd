@@ -4,10 +4,9 @@ import matplotlib.pyplot as plt     # Para la generación de gráficas a partir 
 import apyori
 
 class Apriori():
+    
     @staticmethod
-    def execute(parametros, file=None, dataset="datos_prueba/apriori/movies.csv"):         
-        #ejecucion del algoritmo 
-        
+    def frecuencia(file=None, dataset='datos_prueba/apriori/movies.csv'):
         if file:
             #print('recibiendo archivo')
             data = pd.read_csv(file)
@@ -21,21 +20,33 @@ class Apriori():
 
         #Se agrupa los elementos
         lista = lista.groupby(by=[0], as_index=False).count().sort_values(by=['Frecuencia'], ascending=True) #Conteo
-        lista['Porcentaje'] = (lista['Frecuencia'] / lista['Frecuencia'].sum()) #Porcentaje
         lista = lista.rename(columns={0 : 'Item'})
         lista = lista.to_numpy().tolist()
 
         # Convertimos las frecuencias a json
-        frecuencia = {}
-        index = 0
-        
+        frecuencias = []
+        labels = []
+
         for item in lista:
-            frecuencia[index] = {
-                "pelicula": item[0],
-                "frecuencia": item[1],
-                "porcentaje": item[2]
-            }
-            index = index + 1
+            labels.append(item[0])
+            frecuencias.append(item[1])
+        
+        return {
+            'sucess': True,
+            'frecuencias': frecuencias,
+            'labels': labels
+        }
+
+    @staticmethod
+    def execute(parametros, file=None, dataset="datos_prueba/apriori/movies.csv"):         
+        #ejecucion del algoritmo 
+        
+        if file:
+            #print('recibiendo archivo')
+            data = pd.read_csv(file)
+        else:
+            #print('default')
+            data = pd.read_csv(dataset)
 
         #Se crea una lista de listas a partir del dataframe y se remueven los 'NaN'
         data_lista = data.stack().groupby(level=0).apply(list).tolist()
@@ -80,6 +91,5 @@ class Apriori():
 
         return {
             "sucess": True,
-            "frecuencia": frecuencia,
             "reglas": reglas
         }
