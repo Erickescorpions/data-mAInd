@@ -14,7 +14,13 @@ export default {
                 elevacion: 2,
                 confianza: 0.3,
                 soporte: 0.01
-            }
+            },
+            error_archivo: {
+                error: false,
+                mensaje: ""
+            },
+            chart_frecuencia: null,
+            reglas: null
         }
     },
 
@@ -30,53 +36,102 @@ export default {
 
     methods: {
         enviandoDatos() {
+            
+            // obtenemos el dataset proporcionado
+            const file = this.$refs.fileInput.files[0];
+            
+            // validacion del formulario
             this.v$.$validate()
 
+            const formData = new FormData(); 
+            formData.append('file', file);
+
+            formData.append('confianza', this.parametros.confianza);
+            formData.append('elevacion', this.parametros.elevacion);
+            formData.append('soporte', this.parametros.soporte);
+
             if(!this.v$.$error) {
-                axios.post('http://127.0.0.1:8000/api/apriori', this.parametros)
-                    .then(response => this.generandoGraficas(response))
-                    .catch(error => console.log(error))
+                axios.post('http://127.0.0.1:8000/api/apriori', formData)
+                    .then(response => this.mostrandoDatos(response))
+                    .catch(error => console.log(error));
             }
         },
 
-        generandoGraficas(res) {
-            let frecuencia = res.data.frecuencia;
-            let x_labels_fre = [];
-            let y_labels_fre = [];
-            let length = Object.keys(frecuencia).length;
-            //console.log(typeof(frecuencia));
+        validandoArchivo(event) {
+            const file = event.target.files[0];
+            const extensionesPermitidas = ['csv'];
 
-            for(let i = 0; i < length; i++) {
-                //console.log(frecuencia[i]['frecuencia']);
-                x_labels_fre.push(frecuencia[i]['pelicula']);
-                y_labels_fre.push(frecuencia[i]['frecuencia'])
+            if(file) {
+                const fileExtension = file.name.split('.').pop();
+                //console.log(fileExtension);
+                if (!extensionesPermitidas.includes(fileExtension)) {
+                    // El archivo no tiene la extensión CSV
+                    this.error_archivo.error = true;
+                    this.error_archivo.mensaje = `El archivo solo puede incluir las siguientes extensiones [${extensionesPermitidas.toString()}]`
+
+                    // limpiamos el input del archivo
+                    this.$refs.fileInput.value = '';
+                } else {
+                    const formData = new FormData(); 
+                    formData.append('file', file);
+
+                    axios.post('http://127.0.0.1:8000/api/apriori/frecuencia', formData)
+                        .then(response => this.mostrandoFrecuencias(response))
+                        .catch(error => console.log(error));
+                }
+            }
+        },
+
+
+        mostrandoFrecuencias(res) {
+
+            console.log(res);
+
+            if(this.chart_frecuencia) {
+                this.chart_frecuencia.destroy();
             }
 
-            const canvas_frecuencia = document.getElementById('frecuencia');
+            if(!res.data.sucess) {
+                console.log('Algo fallo');
+                return;
+            }
+            
+            let frecuencias = res.data.frecuencias;
+            let labels = res.data.labels;
 
-            new Chart(canvas_frecuencia, {
+            const canvas_frecuencia = document.getElementById('frecuencia');
+            // agregando clase
+            document.getElementById('frecuencia-container').style.display = 'block';
+
+            let config  = {
                 type: 'bar',
                 data: {
-                labels: x_labels_fre,
-                datasets: [{
-                    label: 'Frecuencia',
-                    data: y_labels_fre,
-                    borderWidth: 10
-                }]
+                    labels: labels,
+                    datasets: [{
+                        label: 'Frecuencia',
+                        data: frecuencias
+                    }],
+                    borderWidth: 1,
                 },
                 options: {
+                    maintainAspectRatio: false,
+
                     indexAxis: 'y',
-                    layout: {
-                        padding: 20
+                    scales: {
+                        y: {
+                            beginAtZero: true, // Iniciar el eje Y en 0
+                            ticks: {
+                                autoSkip: false,
+                            },
+                            barPercentage: 0.8
+                        },
+    
                     },
-                    // Elements options apply to all of the options unless overridden in a dataset
-                    // In this case, we are setting the border of each horizontal bar to be 2px wide
-                    elements: {
-                        bar: {
-                            borderWidth: 2,
-                        }
+
+                    tooltips: {
+                        enabled: true
                     },
-                    responsive: true,
+
                     plugins: {
                         legend: {
                             position: 'right',
@@ -84,19 +139,57 @@ export default {
                         title: {
                             display: true,
                             text: 'Frecuencia de los datos en cada regla de asociacion'
-                        }
+
+                        },
                     }
-                }
-            });
+                },
+            }
+
+            this.chart_frecuencia = new Chart(canvas_frecuencia, config);
+        },
+
+        // Función para ocultar/mostrar la gráfica
+        toggleChart() {
+            let chartContainer = document.getElementById('frecuencia-container');
+            if (chartContainer.style.display === 'none') {
+                chartContainer.style.display = 'block'; // Mostrar la gráfica
+            } else {
+                chartContainer.style.display = 'none'; // Esconder la gráfica
+            }
+        },
+
+        mostrandoDatos(res) {
+            console.log(res);
+            if(this.reglas) {
+                this.reglas = null;
+            }
+
+            this.reglas = res.data.reglas;
         }
     }
 }
 </script>
 
 <template>
-    <div>
-        <p>Selecciona los parametros para aplicar al algoritmo:</p>   
-        <form class="form" @submit.prevent="enviandoDatos">
+    <div class="container">
+        
+        <p>Selecciona un dataset (*extension csv)</p>
+        <div class="container">
+            <label for="dataset">Dataset: </label>
+            <input type="file" ref="fileInput" @change="validandoArchivo"/>
+            <span v-if="error_archivo.error">
+                {{ error_archivo.mensaje }}
+            </span>
+        </div>
+
+        <!-- Seccion de grafica de frecuencia -->
+        <button id="toggleButton" v-on:click="toggleChart" v-if="chart_frecuencia">Mostrar/Esconder Gráfica</button>
+        <div id="frecuencia-container" class="chart-container">
+            <canvas id="frecuencia"> </canvas>
+        </div>
+
+        <p>Agrega los parametros para aplicar al algoritmo:</p>
+        <div class="container">
             <label for="elevacion">Elevacion:</label>
             <input type="text" name="elevacion" id="elevacion" v-model="parametros.elevacion">
             <span v-if="v$.parametros.elevacion.$error">
@@ -114,18 +207,31 @@ export default {
             <span v-if="v$.parametros.soporte.$error">
                 {{ v$.parametros.soporte.$errors[0].$message }}
             </span>
-            <input type="submit" value="GuardarParametros" class="btn-submit">
-        </form>
-    </div>
-
-    <div id="graficas">
-        <canvas id="frecuencia">
-
-        </canvas>
-
-        <canvas id="reglas">
-
-        </canvas>
+        </div>
+        
+        <button class="submit-btn" v-on:click="enviandoDatos">Obtener Reglas</button>
+        
+        <!-- Seccion tabla de reglas generadas -->
+        <div v-if="reglas">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Regla</th>
+                        <th>Soporte</th>
+                        <th>Confianza</th>
+                        <th>Elevacion</th>
+                    </tr>
+                </thead>
+                <tbody v-for="regla in reglas">
+                    <tr>
+                        <th>{{ regla.regla.toString() }}</th>
+                        <th>{{ regla.parametros.soporte.toFixed(4) }}</th>
+                        <th>{{ regla.parametros.confianza.toFixed(4) }}</th>
+                        <th>{{ regla.parametros.elevacion.toFixed(4) }}</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -142,18 +248,21 @@ h3 {
   font-size: 1.2rem;
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  width: 70%;
-  border: 3px white solid;
-  border-radius: 15px;
-  padding: 10px;
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    padding: 10px;
 }
+
 
 .submit-btn {
   align-self: center;
+}
+
+.chart-container {
+    display: none;
+    height: 1500px;
 }
 
 </style>

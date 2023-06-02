@@ -20,29 +20,65 @@ def index():
 @app.route('/api/apriori', methods=['POST'])
 def executeApriori():
     try:
-        if not request.json['confianza'] or not request.json['elevacion'] or not request.json['soporte']:
+        if not request.form['confianza'] or not request.form['elevacion'] or not request.form['soporte']:
             return {
                 "sucess": False,
                 "mensaje": "Es necesario proporcionar los parametros para ejecutar el algoritmo."
             }
         
         parametros = {
-            "confianza": float(request.json['confianza']),
-            "elevacion": float(request.json['elevacion']),
-            "soporte": float(request.json['soporte'])
+            "confianza": float(request.form['confianza']),
+            "elevacion": float(request.form['elevacion']),
+            "soporte": float(request.form['soporte'])
         }
+        
+        file = None
+        
+        if 'file' in request.files:
+            file = request.files['file']
 
-        # file = 
-
-        res = Apriori.execute(parametros)
+        if not file:
+            res = Apriori.execute(parametros)
+        else: 
+            res = Apriori.execute(parametros, file)
+        
         return jsonify(res)
         
-    
+    except KeyError:
+        return jsonify({
+            "sucess": False,
+            "message": "Los parametros que se necesitan recibir son ['confianza', 'elevacion', 'soporte' y opcionalmente un archivo como 'file']."
+        })
+
     except ValueError:
-        return {
+        return jsonify({
             "sucess": False,
             "message": "Los parametros ['confianza', 'elevacion' y 'soporte'] deben de ser de tipo flotante."
-        }
+        })
+
+
+'''
+    ruta que devuelve la frecuencia de los datos de un .csv
+'''
+@app.route('/api/apriori/frecuencia', methods=['POST'])
+def getFrecuencia():
+    try:
+        file = None
+        
+        if 'file' in request.files:
+            file = request.files['file']
+
+        if not file:
+            res = Apriori.frecuencia()
+        else: 
+            res = Apriori.frecuencia(file)
+
+        return jsonify(res)
+    except KeyError:
+        return jsonify({
+            "sucess": False,
+            "message": 'Hubo un error.'
+        })
 
 '''
     ruta para obtener las distancias, recibe el tipo de 
@@ -51,17 +87,36 @@ def executeApriori():
 '''
 @app.route('/api/metricas', methods=['POST'])
 def executeMetricas():
-    valores_metricas = ['euclidean', 'chebyshev', 'cityblock', 'minkowski']
-    metrica = request.json['metrica']
-    
-    if metrica not in valores_metricas: 
-        return {
-            "sucess": False,
-            "message": f"No se reconoce la metrica {metrica}, por favor envia una metrica que este dentro de los siguiente valores: {valores_metricas}"
-        }
+    try:
+        valores_metricas = ['euclidean', 'chebyshev', 'cityblock', 'minkowski']
+        
+        metrica = ''
 
-    res = MetricasDistancia.execute(metrica)
-    return jsonify(res)
+        if 'metrica' in request.form:
+            metrica = request.form['metrica']
+        
+        if metrica not in valores_metricas: 
+            return jsonify({
+                "sucess": False,
+                "message": f"No se reconoce la metrica {metrica}, por favor envia una metrica que este dentro de los siguiente valores: {valores_metricas}"
+            });
+
+        file = None
+            
+        if 'file' in request.files:
+            file = request.files['file']
+
+        if not file:
+            res = MetricasDistancia.execute(metrica)
+        else: 
+            res = MetricasDistancia.execute(metrica, file=file)
+
+        return jsonify(res)
+    except KeyError:
+        return jsonify({
+            "sucess": False,
+            "message": "Los parametros que se necesitan recibir son ['metrica' y opcionalmente un archivo como 'file]"
+        })
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
