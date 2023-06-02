@@ -43,6 +43,21 @@ import Chart from 'chart.js/auto';
                     .catch( error => console.log( error ) )
             },
 
+            mostrarCSV(){
+                const file = this.$refs.fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = () => {
+                    const csvString = reader.result;
+                    // Procesar csvString como lo necesites
+                    const jsonArray = csvtojson().fromString(csvString);
+                    this.guardandoDatos(jsonArray);
+                    this.mostrarContenido = true; // Mostrar el contenido del archivo automáticamente
+                };
+
+                reader.readAsText(file);
+            },
+
             validandoArchivo(event) {
                 const file = event.target.files[0];
                 const extensionesPermitidas = ['csv'];
@@ -58,6 +73,8 @@ import Chart from 'chart.js/auto';
                         // limpiamos el input del archivo
                         this.$refs.fileInput.value = '';
                     }
+                    this.mostrarCSV();
+
                 }
             }, 
 
@@ -119,6 +136,22 @@ import Chart from 'chart.js/auto';
                 <span v-if="error_archivo.error">
                     {{ error_archivo.mensaje }}
                 </span>
+                <table class="table">
+                    <!-- Encabezados de columna -->
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th v-for="(value, index) in respuesta[0]" :key="index">{{ index }}</th>
+                    </tr>
+                    </thead>
+                    <!-- Contenido del archivo CSV -->
+                    <tbody>
+                    <tr v-for="(row, rowIndex) in respuesta" :key="rowIndex">
+                        <td><strong>{{ rowIndex }}</strong></td>
+                        <td v-for="(value, key) in row" :key="key">{{ value }}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="selector">
