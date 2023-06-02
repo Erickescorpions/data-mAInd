@@ -1,6 +1,10 @@
 <script setup>
 import axios from 'axios';
 import Chart from 'chart.js/auto';
+import VueGoodTablePlugin from 'vue-good-table';
+import 'vue-good-table/dist/vue-good-table.css';
+
+Vue.use(VueGoodTablePlugin);
 </script>
 
 <script>
@@ -104,6 +108,7 @@ import Chart from 'chart.js/auto';
 
     <div v-if="bandera">
         <h2>Las distancias obtenidas son las siguientes:</h2>
+        <vue-good-table :columns="columns" :rows="respuesta"></vue-good-table>
         <form>
             <div class="contenedor">        
                 <div class="selector">
