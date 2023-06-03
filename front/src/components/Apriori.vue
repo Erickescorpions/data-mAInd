@@ -1,26 +1,24 @@
 <script setup>
-import useValidate from '@vuelidate/core';
+import { useVuelidate } from '@vuelidate/core';
 import { required, numeric } from '@vuelidate/validators';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
+import File from './File.vue';
 </script>
 
 <script>
 export default {
     data() {
         return {
-            v$: useValidate(),
             parametros: {
                 elevacion: 2,
                 confianza: 0.3,
                 soporte: 0.01
             },
-            error_archivo: {
-                error: false,
-                mensaje: ""
-            },
+            file: null,
             chart_frecuencia: null,
-            reglas: null
+            reglas: null,
+            v$: useVuelidate()
         }
     },
 
@@ -35,58 +33,19 @@ export default {
     },
 
     methods: {
-        enviandoDatos() {
-            
-            // obtenemos el dataset proporcionado
-            const file = this.$refs.fileInput.files[0];
-            
-            // validacion del formulario
-            this.v$.$validate()
-
-            const formData = new FormData(); 
+        cargandoArchivo(file) {
+            const formData = new FormData();
             formData.append('file', file);
+            this.file = file;
 
-            formData.append('confianza', this.parametros.confianza);
-            formData.append('elevacion', this.parametros.elevacion);
-            formData.append('soporte', this.parametros.soporte);
+            this.reglas = null;
 
-            if(!this.v$.$error) {
-                axios.post('http://127.0.0.1:8000/api/apriori', formData)
-                    .then(response => this.mostrandoDatos(response))
-                    .catch(error => console.log(error));
-            }
+            axios.post('http://127.0.0.1:8000/api/apriori/frecuencia', formData)
+                .then(response => this.mostrandoFrecuencias(response))
+                .catch(error => console.log(error));
         },
-
-        validandoArchivo(event) {
-            const file = event.target.files[0];
-            const extensionesPermitidas = ['csv'];
-
-            if(file) {
-                const fileExtension = file.name.split('.').pop();
-                //console.log(fileExtension);
-                if (!extensionesPermitidas.includes(fileExtension)) {
-                    // El archivo no tiene la extensión CSV
-                    this.error_archivo.error = true;
-                    this.error_archivo.mensaje = `El archivo solo puede incluir las siguientes extensiones [${extensionesPermitidas.toString()}]`
-
-                    // limpiamos el input del archivo
-                    this.$refs.fileInput.value = '';
-                } else {
-                    const formData = new FormData(); 
-                    formData.append('file', file);
-
-                    axios.post('http://127.0.0.1:8000/api/apriori/frecuencia', formData)
-                        .then(response => this.mostrandoFrecuencias(response))
-                        .catch(error => console.log(error));
-                }
-            }
-        },
-
 
         mostrandoFrecuencias(res) {
-
-            console.log(res);
-
             if(this.chart_frecuencia) {
                 this.chart_frecuencia.destroy();
             }
@@ -148,6 +107,24 @@ export default {
             this.chart_frecuencia = new Chart(canvas_frecuencia, config);
         },
 
+        enviandoDatos() {
+            // validacion del formulario
+            this.v$.$validate() 
+
+            const formData = new FormData(); 
+            formData.append('file', this.file);
+
+            formData.append('confianza', this.parametros.confianza);
+            formData.append('elevacion', this.parametros.elevacion);
+            formData.append('soporte', this.parametros.soporte);
+
+            if(!this.v$.$error) {
+                axios.post('http://127.0.0.1:8000/api/apriori', formData)
+                    .then(response => this.mostrandoDatos(response))
+                    .catch(error => console.log(error));
+            }
+        },
+
         // Función para ocultar/mostrar la gráfica
         toggleChart() {
             let chartContainer = document.getElementById('frecuencia-container');
@@ -171,16 +148,9 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <div class="my-container">
         
-        <p>Selecciona un dataset (*extension csv)</p>
-        <div class="container">
-            <label for="dataset">Dataset: </label>
-            <input type="file" ref="fileInput" @change="validandoArchivo"/>
-            <span v-if="error_archivo.error">
-                {{ error_archivo.mensaje }}
-            </span>
-        </div>
+        <File @archivoValidado="cargandoArchivo"/>
 
         <!-- Seccion de grafica de frecuencia -->
         <button id="toggleButton" v-on:click="toggleChart" v-if="chart_frecuencia">Mostrar/Esconder Gráfica</button>
@@ -189,80 +159,71 @@ export default {
         </div>
 
         <p>Agrega los parametros para aplicar al algoritmo:</p>
-        <div class="container">
-            <label for="elevacion">Elevacion:</label>
-            <input type="text" name="elevacion" id="elevacion" v-model="parametros.elevacion">
-            <span v-if="v$.parametros.elevacion.$error">
+        <div class="parametros-container">
+            <v-text-field 
+                label="Elevacion minima" type="numeric" variant="outlined" clearable
+                v-model="parametros.elevacion" class="input"
+            ></v-text-field>
+            <span v-if="v$.parametros.elevacion.$error" class="error-msg">
                 {{ v$.parametros.elevacion.$errors[0].$message }}
             </span>
 
-            <label for="confianza">Confianza:</label>
-            <input type="text" name="confianza" id="confianza" v-model="parametros.confianza">
-            <span v-if="v$.parametros.confianza.$error">
+            <v-text-field
+                label="Confianza minima" type="numeric" variant="outlined" clearable
+                v-model="parametros.confianza" class="input"
+            ></v-text-field>
+            <span v-if="v$.parametros.confianza.$error" class="error-msg">
                 {{ v$.parametros.confianza.$errors[0].$message }}
             </span>
 
-            <label for="soporte">Soporte:</label>
-            <input type="text" name="soporte" id="soporte" step="any" v-model="parametros.soporte">
-            <span v-if="v$.parametros.soporte.$error">
+            <v-text-field
+                label="Soporte minimo" type="numeric" variant="outlined" clearable
+                v-model="parametros.soporte" class="input"
+            ></v-text-field>
+            <span v-if="v$.parametros.soporte.$error" class="error-msg">
                 {{ v$.parametros.soporte.$errors[0].$message }}
             </span>
         </div>
         
-        <button class="submit-btn" v-on:click="enviandoDatos">Obtener Reglas</button>
+        <button class="" v-on:click="enviandoDatos">Obtener Reglas</button>
         
         <!-- Seccion tabla de reglas generadas -->
         <div v-if="reglas">
-            <table>
+            <v-table>
                 <thead>
-                    <tr>
-                        <th>Regla</th>
-                        <th>Soporte</th>
-                        <th>Confianza</th>
-                        <th>Elevacion</th>
-                    </tr>
+                <tr>
+                    <th class="text-left">No.</th>
+                    <th class="text-left">Regla</th>
+                    <th class="text-left">Soporte</th>
+                    <th class="text-left">Confianza</th>
+                    <th class="text-left">Elevacion</th>
+                </tr>
                 </thead>
-                <tbody v-for="regla in reglas">
-                    <tr>
-                        <th>{{ regla.regla.toString() }}</th>
-                        <th>{{ regla.parametros.soporte.toFixed(4) }}</th>
-                        <th>{{ regla.parametros.confianza.toFixed(4) }}</th>
-                        <th>{{ regla.parametros.elevacion.toFixed(4) }}</th>
+                <tbody>
+                    <tr v-for="(regla, index) in reglas" :key="index">
+                        <td>{{ index }}</td>
+                        <td>{{ regla.regla }}</td>
+                        <td>{{ regla.soporte.toFixed(4) }}</td>
+                        <td>{{ regla.confianza.toFixed(4) }}</td>
+                        <td>{{ regla.elevacion.toFixed(4) }}</td>
                     </tr>
                 </tbody>
-            </table>
+            </v-table>
         </div>
     </div>
 </template>
 
-
-
 <style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    padding: 10px;
-}
-
-
-.submit-btn {
-  align-self: center;
-}
-
 .chart-container {
     display: none;
     height: 1500px;
 }
 
+.parametros-container {
+    padding: 30px;
+}
+
+.input {
+    margin: 0px;
+}
 </style>
