@@ -136,7 +136,7 @@ import CSV from './CSV.vue';
         </form>
         <!-- <div v-html="tablaHtml" class="contenedor"></div> -->
 
-        <v-table fixed-header height="500px" v-if="file">
+        <v-table fixed-header height="500px">
             <thead>
             <tr>
                 <th></th>
