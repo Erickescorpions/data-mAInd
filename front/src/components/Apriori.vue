@@ -18,6 +18,7 @@ export default {
             file: null,
             chart_frecuencia: null,
             reglas: null,
+            mostrarFrecuencia: true,
             v$: useVuelidate()
         }
     },
@@ -130,8 +131,10 @@ export default {
             let chartContainer = document.getElementById('frecuencia-container');
             if (chartContainer.style.display === 'none') {
                 chartContainer.style.display = 'block'; // Mostrar la gráfica
+                this.mostrarFrecuencia = true;
             } else {
                 chartContainer.style.display = 'none'; // Esconder la gráfica
+                this.mostrarFrecuencia = false;
             }
         },
 
@@ -153,39 +156,48 @@ export default {
         <File @archivoValidado="cargandoArchivo"/>
 
         <!-- Seccion de grafica de frecuencia -->
-        <button id="toggleButton" v-on:click="toggleChart" v-if="chart_frecuencia">Mostrar/Esconder Gráfica</button>
+        <v-btn variant="flat" v-on:click="toggleChart" v-if="chart_frecuencia" class="btn mostrar">
+            {{mostrarFrecuencia ? 'Esconder' : 'Mostrar'}} Frecuencia
+        </v-btn>
+
         <div id="frecuencia-container" class="chart-container">
             <canvas id="frecuencia"> </canvas>
         </div>
 
         <p>Agrega los parametros para aplicar al algoritmo:</p>
         <div class="parametros-container">
-            <v-text-field 
-                label="Elevacion minima" type="numeric" variant="outlined" clearable
-                v-model="parametros.elevacion" class="input"
-            ></v-text-field>
-            <span v-if="v$.parametros.elevacion.$error" class="error-msg">
-                {{ v$.parametros.elevacion.$errors[0].$message }}
-            </span>
+            <div class="input-container">
+                <v-text-field 
+                    label="Elevacion minima" type="numeric" variant="outlined" clearable hide-details="true"
+                    v-model="parametros.elevacion" class="input"
+                ></v-text-field>
+                <span v-if="v$.parametros.elevacion.$error" class="error-msg">
+                    {{ v$.parametros.elevacion.$errors[0].$message }}
+                </span>
+            </div>
+            
+            <div class="input-container">
+                <v-text-field
+                    label="Confianza minima" type="numeric" variant="outlined" clearable hide-details="true"
+                    v-model="parametros.confianza" class="input"
+                ></v-text-field>
+                <span v-if="v$.parametros.confianza.$error" class="error-msg">
+                    {{ v$.parametros.confianza.$errors[0].$message }}
+                </span>
+            </div>
 
-            <v-text-field
-                label="Confianza minima" type="numeric" variant="outlined" clearable
-                v-model="parametros.confianza" class="input"
-            ></v-text-field>
-            <span v-if="v$.parametros.confianza.$error" class="error-msg">
-                {{ v$.parametros.confianza.$errors[0].$message }}
-            </span>
-
-            <v-text-field
-                label="Soporte minimo" type="numeric" variant="outlined" clearable
-                v-model="parametros.soporte" class="input"
-            ></v-text-field>
-            <span v-if="v$.parametros.soporte.$error" class="error-msg">
-                {{ v$.parametros.soporte.$errors[0].$message }}
-            </span>
+            <div class="input-container">
+                <v-text-field
+                    label="Soporte minimo" type="numeric" variant="outlined" clearable hide-details="true"
+                    v-model="parametros.soporte" class="input"
+                ></v-text-field>
+                <span v-if="v$.parametros.soporte.$error" class="error-msg">
+                    {{ v$.parametros.soporte.$errors[0].$message }}
+                </span>
+            </div>
+            
+            <v-btn variant="flat" v-on:click="enviandoDatos" class="btn">Obtener Reglas</v-btn>
         </div>
-        
-        <button class="" v-on:click="enviandoDatos">Obtener Reglas</button>
         
         <!-- Seccion tabla de reglas generadas -->
         <div v-if="reglas">
@@ -221,9 +233,21 @@ export default {
 
 .parametros-container {
     padding: 30px;
+    width: 300px;
+    margin: auto;
 }
 
-.input {
-    margin: 0px;
+.input-container {
+    margin: 20px 0px;
+}
+
+.btn {
+    background-color: var(--main-color);
+    color: white;
+    margin: auto;
+}
+
+.mostrar {
+    float: right;
 }
 </style>

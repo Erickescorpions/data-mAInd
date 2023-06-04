@@ -43,11 +43,13 @@ export default {
     <p>Selecciona un dataset (*extension csv) o escoge entre los archivos predeterminados:</p>
     <div class="file-container">
         <v-file-input 
-            clearable label="File input" variant="outlined" :disabled="fileSelected ? true : false"
-            ref="fileInput" @change="validandoArchivo"
+            clearable label="File input" variant="outlined"
+            :disabled="fileSelected ? true : false" hide-details="true"
+            ref="fileInput" @change="validandoArchivo" 
         ></v-file-input>
         <v-select
             clearable
+            hide-details="true"
             label="Selecciona"
             :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
             variant="outlined"
@@ -63,5 +65,6 @@ export default {
 .file-container {
     display: flex;
     gap: 20px;
+    margin: 20px 0px;
 }
 </style>
