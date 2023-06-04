@@ -61,3 +61,9 @@ h1 {
   color: var(--red-color);
   margin: 20px 0px;
 }
+
+.btn {
+  background-color: var(--main-color);
+  color: white;
+  margin: auto;
+}

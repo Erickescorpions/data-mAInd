@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 class MetricasDistancia():
     @staticmethod
-    def execute(metrica, file=None, dataset="datos_prueba/metricas/Hipoteca.csv"):         
+    def execute(metrica, file=None, dataset="datos_prueba/metricas/Hipoteca.csv", columnas_no_requeridas=[]):         
         # ejecucion del algoritmo 
         if file:
             #print('recibiendo archivo')
@@ -16,11 +16,14 @@ class MetricasDistancia():
 
         # eliminando columnas no numericas
         columnas_no_numericas = data.select_dtypes(exclude='number').columns
-        data_df = data.drop(columnas_no_numericas, axis=1)
+        data = data.drop(columnas_no_numericas, axis=1)
 
-        # estandarizacion de datos
+        data = data.drop(columnas_no_requeridas, axis=1)
+        print(data)
+
+        # estandarizacion de datos  
         estandarizar = StandardScaler()
-        data_estandarizada = estandarizar.fit_transform(data_df)
+        data_estandarizada = estandarizar.fit_transform(data)
 
         #print(data_estandarizada)
 

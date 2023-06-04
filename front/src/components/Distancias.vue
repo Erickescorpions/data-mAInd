@@ -1,26 +1,22 @@
 <script setup>
 import axios from 'axios';
 import Chart from 'chart.js/auto';
-import csvtojson from 'csvtojson';
+import File from './File.vue';
+import CSV from './CSV.vue';
 </script>
 
 <script>
     export default{
-        data(){
+        data() {
             return{
                 parametros:{
                     metrica : ''
                 },
-
-                error_archivo: {
-                    error: false,
-                    mensaje: ""
-                },
-
                 respuesta: null,
                 col_row : 0,
                 bandera : false,
-                cvs : null
+                file: null,
+                columnasNoRequeridas: null
             }
             
         },
@@ -33,52 +29,18 @@ import csvtojson from 'csvtojson';
 
         methods: {
             enviandoDatos(){
-                 // obtenemos el dataset proporcionado
-                const file = this.$refs.fileInput.files[0]
+                const formData = new FormData() ;
+                formData.append('file', this.file);
+                formData.append( 'metrica', this.parametros.metrica );
 
-                const formData = new FormData() 
-                formData.append('file', file)
-
-                formData.append( 'metrica', this.parametros.metrica )
+                if(this.columnasNoRequeridas) {
+                    formData.append('columnas_no_requeridas', JSON.stringify(this.columnasNoRequeridas));
+                }
+                
                 axios.post( 'http://127.0.0.1:8000/api/metricas', formData )
                     .then( response => this.guardandoDatos( response ) )
-                    .catch( error => console.log( error ) )
+                    .catch( error => console.log( error ) );
             },
-
-            cargarArchivo() {
-                const file = this.$refs.fileInput.files[0];
-                const reader = new FileReader();
-
-                reader.onload = () => {
-                    const csvString = reader.result;
-                    // Procesar csvString como lo necesites
-                    const jsonArray = csvtojson().fromString(csvString);
-                    this.cvs = jsonArray;
-                };
-
-                reader.readAsText(file);
-            },
-
-            validandoArchivo(event) {
-                const file = event.target.files[0];
-                const extensionesPermitidas = ['csv'];
-                this.cargarArchivo();
-
-                if(file) {
-                    const fileExtension = file.name.split('.').pop();
-                    // console.log(fileExtension);
-                    if (!extensionesPermitidas.includes(fileExtension)) {
-                        // El archivo no tiene la extensión CSV
-                        this.error_archivo.error = true;
-                        this.error_archivo.mensaje = `El archivo solo puede incluir las siguientes extensiones [${extensionesPermitidas.toString()}]`
-
-                        // limpiamos el input del archivo
-                        this.$refs.fileInput.value = '';
-                    }
-
-                    
-                }
-            }, 
 
             guardandoDatos( res ){
                 this.respuesta = res.data.distancias
@@ -131,14 +93,8 @@ import csvtojson from 'csvtojson';
     <h1 class="titulo">Metricas de distancias</h1>
     <form @submit.prevent="enviandoDatos">
         <div class="contenedor">        
-            <p>Selecciona un dataset (*extension csv)</p>
-            <div class="slector">
-                <label for="dataset">Dataset: </label>
-                <input type="file" ref="fileInput" @change="validandoArchivo"/>
-                <span v-if="error_archivo.error">
-                    {{ error_archivo.mensaje }}
-                </span>
-            </div>
+            <File @archivoValidado="file => this.file = file" />
+            <CSV :file="file" @columnasNoRequeridas="data => this.columnasNoRequeridas = data" />
 
             <div class="selector">
                 <label for=""><strong>Seleccione la metrica de distancia que desea utilizar:</strong></label>
@@ -198,12 +154,24 @@ import csvtojson from 'csvtojson';
                 </div>
             </div>
         </form>
-        <div v-html="tablaHtml" class="contenedor"></div>
+        <!-- <div v-html="tablaHtml" class="contenedor"></div> -->
+
+        <v-table fixed-header height="500px">
+            <thead>
+            <tr>
+                <th></th>
+                <th class="text-left" v-for="(res, index) in respuesta[0]">{{ index }}</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(row, index) in respuesta" :key="index">
+                    <td>{{ index }}</td>
+                    <td v-for="cell in row">{{ cell.toFixed(3) }}</td>
+                </tr>
+            </tbody>
+        </v-table>
     </div>
-    
-
-
-  </template>
+</template>
   
   <style scoped>
   .titulo {

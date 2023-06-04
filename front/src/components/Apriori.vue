@@ -241,12 +241,6 @@ export default {
     margin: 20px 0px;
 }
 
-.btn {
-    background-color: var(--main-color);
-    color: white;
-    margin: auto;
-}
-
 .mostrar {
     float: right;
 }
