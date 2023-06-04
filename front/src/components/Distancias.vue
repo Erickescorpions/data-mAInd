@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios';
 import Chart from 'chart.js/auto';
+import csvtojson from 'csvtojson';
 </script>
 
 <script>
@@ -18,7 +19,8 @@ import Chart from 'chart.js/auto';
 
                 respuesta: null,
                 col_row : 0,
-                bandera : false
+                bandera : false,
+                cvs : null
             }
             
         },
@@ -43,9 +45,24 @@ import Chart from 'chart.js/auto';
                     .catch( error => console.log( error ) )
             },
 
+            cargarArchivo() {
+                const file = this.$refs.fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = () => {
+                    const csvString = reader.result;
+                    // Procesar csvString como lo necesites
+                    const jsonArray = csvtojson().fromString(csvString);
+                    this.cvs = jsonArray;
+                };
+
+                reader.readAsText(file);
+            },
+
             validandoArchivo(event) {
                 const file = event.target.files[0];
                 const extensionesPermitidas = ['csv'];
+                this.cargarArchivo();
 
                 if(file) {
                     const fileExtension = file.name.split('.').pop();
@@ -58,6 +75,8 @@ import Chart from 'chart.js/auto';
                         // limpiamos el input del archivo
                         this.$refs.fileInput.value = '';
                     }
+
+                    
                 }
             }, 
 
@@ -136,6 +155,27 @@ import Chart from 'chart.js/auto';
             </div>
         </div>
     </form>
+
+    <div v-if="csv">
+        <h2>Contenido del archivo:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th v-for="(value, index) in respuesta[0]" :key="index">{{ index }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(row, rowIndex) in respuesta" :key="rowIndex">
+                    <td>{{ rowIndex }}</td>
+                    <td v-for="(value, key) in row" :key="key">{{ value }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
 
     <!-- <div>
         <h2>Respuesta del servidor:</h2>
