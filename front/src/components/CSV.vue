@@ -28,6 +28,7 @@ export default {
                     } 
                 }
 
+                this.$emit('columnasNoRequeridas', columnasNoRequeridas);
                 formData.append('columnas_no_requeridas', JSON.stringify(columnasNoRequeridas));
             }
 

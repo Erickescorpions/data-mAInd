@@ -152,8 +152,8 @@ def getFrecuencia():
 def executeMetricas():
     try:
         valores_metricas = ['euclidean', 'chebyshev', 'cityblock', 'minkowski']
-        
         metrica = ''
+        columnas_no_requeridas = []
 
         if 'metrica' in request.form:
             metrica = request.form['metrica']
@@ -163,6 +163,10 @@ def executeMetricas():
                 "sucess": False,
                 "message": f"No se reconoce la metrica {metrica}, por favor envia una metrica que este dentro de los siguiente valores: {valores_metricas}"
             });
+    
+        if 'columnas_no_requeridas' in request.form: 
+            columnas_no_requeridas = json.loads(request.form['columnas_no_requeridas'])
+            print(request.form['columnas_no_requeridas'])
 
         file = None
             
@@ -170,9 +174,9 @@ def executeMetricas():
             file = request.files['file']
 
         if not file:
-            res = MetricasDistancia.execute(metrica)
+            res = MetricasDistancia.execute(metrica, columnas_no_requeridas=columnas_no_requeridas)
         else: 
-            res = MetricasDistancia.execute(metrica, file=file)
+            res = MetricasDistancia.execute(metrica, file=file, columnas_no_requeridas=columnas_no_requeridas)
 
         return jsonify(res)
     except KeyError:

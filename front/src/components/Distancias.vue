@@ -7,21 +7,16 @@ import CSV from './CSV.vue';
 
 <script>
     export default{
-        data(){
+        data() {
             return{
                 parametros:{
                     metrica : ''
                 },
-
-                error_archivo: {
-                    error: false,
-                    mensaje: ""
-                },
-
                 respuesta: null,
                 col_row : 0,
                 bandera : false,
-                file: null
+                file: null,
+                columnasNoRequeridas: null
             }
             
         },
@@ -34,13 +29,17 @@ import CSV from './CSV.vue';
 
         methods: {
             enviandoDatos(){
-                const formData = new FormData() 
-                formData.append('file', this.file)
+                const formData = new FormData() ;
+                formData.append('file', this.file);
+                formData.append( 'metrica', this.parametros.metrica );
 
-                formData.append( 'metrica', this.parametros.metrica )
+                if(this.columnasNoRequeridas) {
+                    formData.append('columnas_no_requeridas', JSON.stringify(this.columnasNoRequeridas));
+                }
+                
                 axios.post( 'http://127.0.0.1:8000/api/metricas', formData )
                     .then( response => this.guardandoDatos( response ) )
-                    .catch( error => console.log( error ) )
+                    .catch( error => console.log( error ) );
             },
 
             guardandoDatos( res ){
@@ -95,7 +94,7 @@ import CSV from './CSV.vue';
     <form @submit.prevent="enviandoDatos">
         <div class="contenedor">        
             <File @archivoValidado="file => this.file = file" />
-            <CSV :file="file" />
+            <CSV :file="file" @columnasNoRequeridas="data => this.columnasNoRequeridas = data" />
 
             <div class="selector">
                 <label for=""><strong>Seleccione la metrica de distancia que desea utilizar:</strong></label>
