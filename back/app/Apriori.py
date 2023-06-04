@@ -75,16 +75,12 @@ class Apriori():
             
             for item in regla[0]:
                 items.append(item)
-            
-            parametros = {
+
+            reglas[index] = {
+                "regla": ' | '.join(items),
                 "confianza": regla[2][0][2],
                 "elevacion": regla[2][0][3],
                 "soporte": regla[1]
-            }
-
-            reglas[index] = {
-                "regla": items,
-                "parametros": parametros
             }
 
             index = index + 1
