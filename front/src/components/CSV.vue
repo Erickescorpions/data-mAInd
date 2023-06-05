@@ -17,7 +17,6 @@ export default {
 
     methods: {
         obteniendoDatos() {
-            this.mostrar = !this.mostrar;
             const formData = new FormData();
             formData.append('file', this.file);
 
@@ -53,13 +52,20 @@ export default {
                 })
                 .catch(error => console.log(error));
         },
+
+        mostrarDatos(){
+            this.mostrar = !this.mostrar;
+            if ( this.mostrar == true ){
+                this.obteniendoDatos();
+            }
+        },
     }
 }
 </script>
 
 <template>
     <div>
-        <v-btn variant="flat" v-if="file" v-on:click="obteniendoDatos" class="btn" >
+        <v-btn variant="flat" v-if="file" v-on:click="mostrarDatos" class="btn" >
             Mostrar Datos
         </v-btn>
 
