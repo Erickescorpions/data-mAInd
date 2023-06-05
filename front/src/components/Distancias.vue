@@ -48,42 +48,7 @@ import CSV from './CSV.vue';
                 this.bandera = true
             },
 
-            generandoTabla( data ){
-                if ( Array.isArray( data ) ) {
-
-                    const colRow = parseInt( this.col_row ); // Convertir a entero
-
-                    // Formatear los datos en una tabla HTML
-                    let tabla = '<table>';
-                    tabla += '<thead><tr>';
-
-                    // Agregar encabezado de columnas
-                    tabla += '<th></th>';
-                    for ( let i = 0; i < colRow; i++ ) {
-                        tabla += `<th>${i}</th>`;
-                    }
-
-                    tabla += '</tr></thead>';
-                    tabla += '<tbody>';
-
-                    for ( let i = 0; i < colRow; i++ ) {
-                        tabla += '<tr>';
-                        tabla += `<td><strong>${ i }</strong></td>`; // Agregar encabezado de fila
-                        for (let j = 0; j < colRow; j++) {
-                            tabla += `<td>${ data[i][j] }</td>`;
-                        }
-
-                        tabla += '</tr>';
-                    }
-
-                    tabla += '</tbody>';
-                    tabla += '</table>';
-
-                    return tabla;
-                }
-
-                return '';   
-            }
+            
         }
     }
 
@@ -91,7 +56,7 @@ import CSV from './CSV.vue';
 
 <template>
     <h1 class="titulo">Metricas de distancias</h1>
-    <form @submit.prevent="enviandoDatos">
+    <form>
         <div class="contenedor">        
             <File @archivoValidado="file => this.file = file" />
             <CSV :file="file" @columnasNoRequeridas="data => this.columnasNoRequeridas = data" />
@@ -99,15 +64,12 @@ import CSV from './CSV.vue';
             <div class="selector">
                 <label for=""><strong>Seleccione la metrica de distancia que desea utilizar:</strong></label>
                 <br>
-                <select name="metrica" id="metrica" v-model="parametros.metrica">
+                <select name="metrica" id="metrica" v-model="parametros.metrica" @change="enviandoDatos">
                 <option value="euclidean">Euclidiana</option>
                 <option value="chebyshev">Chebyshev</option>
                 <option value="cityblock">City block</option>
                 <option value="minkowski">Minkowski</option>
                 </select>
-            </div>
-            <div class="btn-submit">
-                <button type="submit" class="btn-submit">Enviar</button>
             </div>
         </div>
     </form>
