@@ -10,12 +10,14 @@ export default {
         return {
             columnas: null,
             data: null,
-            headers: null
+            headers: null,
+            mostrar : false
         }
     },
 
     methods: {
         obteniendoDatos() {
+            this.mostrar = !this.mostrar;
             const formData = new FormData();
             formData.append('file', this.file);
 
@@ -57,11 +59,11 @@ export default {
 
 <template>
     <div>
-        <v-btn variant="flat" v-if="file" v-on:click="obteniendoDatos" class="btn">
+        <v-btn variant="flat" v-if="file" v-on:click="obteniendoDatos" class="btn" >
             Mostrar Datos
         </v-btn>
 
-        <div v-for="(item, index) in columnas">
+        <div v-for="(item, index) in columnas" v-if="mostrar">
             <v-checkbox
                 :label="item.columna"
                 v-model="item.requerida"
@@ -71,7 +73,7 @@ export default {
         </div>
 
         <!-- Se muestra un modal -->
-        <v-table fixed-header height="500px" v-if="file">
+        <v-table fixed-header height="500px" v-if="mostrar">
             <thead>
             <tr>
                 <th class="text-left" v-for="head in headers">{{ head }}</th>
