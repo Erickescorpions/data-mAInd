@@ -4,6 +4,7 @@ import { required, numeric } from '@vuelidate/validators';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
 import File from './File.vue';
+import { faTurkishLiraSign } from '@fortawesome/free-solid-svg-icons';
 </script>
 
 <script>
@@ -15,11 +16,26 @@ export default {
                 confianza: 0.3,
                 soporte: 0.01
             },
+        
             file: null,
+
             chart_frecuencia: null,
-            reglas: null,
             mostrarFrecuencia: true,
-            v$: useVuelidate()
+
+            // validaciones
+            v$: useVuelidate(),
+
+            // tabla resultados
+            headers: [
+                { title: 'ID', align: 'start', sortable: true, key: 'id' },
+                { title: 'Regla', align: 'start', sortable: false, key: 'regla' },
+                { title: 'Soporte', align: 'start', sortable: true, key: 'soporte' },
+                { title: 'Confianza', align: 'start', sortable: true, key: 'confianza' },
+                { title: 'Elevación', align: 'start', sortable: true, key: 'elevacion' },
+            ],
+            reglas: [],
+            itemsPerPage: 10,
+            mostrarReglas: false
         }
     },
 
@@ -40,6 +56,7 @@ export default {
             this.file = file;
 
             this.reglas = null;
+            this.mostrarReglas = false;
 
             axios.post('http://127.0.0.1:8000/api/apriori/frecuencia', formData)
                 .then(response => this.mostrandoFrecuencias(response))
@@ -110,7 +127,7 @@ export default {
 
         enviandoDatos() {
             // validacion del formulario
-            this.v$.$validate() 
+            this.v$.$validate();
 
             const formData = new FormData(); 
             formData.append('file', this.file);
@@ -139,12 +156,19 @@ export default {
         },
 
         mostrandoDatos(res) {
-            console.log(res);
-            if(this.reglas) {
-                this.reglas = null;
+            let reglas_obtenidas = res.data.reglas;
+            let size = Object.keys(reglas_obtenidas).length;
+            this.reglas = [];
+
+            for(let i = 0; i < size; i++) {
+                reglas_obtenidas[i]['id'] = i;
+                reglas_obtenidas[i].soporte = reglas_obtenidas[i].soporte.toFixed(4);
+                reglas_obtenidas[i].confianza = reglas_obtenidas[i].confianza.toFixed(4);
+                reglas_obtenidas[i].elevacion = reglas_obtenidas[i].elevacion.toFixed(4);
+                this.reglas.push(reglas_obtenidas[i])
             }
 
-            this.reglas = res.data.reglas;
+            this.mostrarReglas = true;
         }
     }
 }
@@ -200,27 +224,14 @@ export default {
         </div>
         
         <!-- Seccion tabla de reglas generadas -->
-        <div v-if="reglas">
-            <v-table>
-                <thead>
-                <tr>
-                    <th class="text-left">No.</th>
-                    <th class="text-left">Regla</th>
-                    <th class="text-left">Soporte</th>
-                    <th class="text-left">Confianza</th>
-                    <th class="text-left">Elevacion</th>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(regla, index) in reglas" :key="index">
-                        <td>{{ index }}</td>
-                        <td>{{ regla.regla }}</td>
-                        <td>{{ regla.soporte.toFixed(4) }}</td>
-                        <td>{{ regla.confianza.toFixed(4) }}</td>
-                        <td>{{ regla.elevacion.toFixed(4) }}</td>
-                    </tr>
-                </tbody>
-            </v-table>
+        <div v-if="mostrarReglas">
+            <v-data-table
+                v-model:items-per-page="itemsPerPage"
+                :headers="headers"
+                :items="reglas"
+                item-value="id"
+                class="elevation-1"
+            ></v-data-table>
         </div>
     </div>
 </template>
@@ -228,7 +239,9 @@ export default {
 <style scoped>
 .chart-container {
     display: none;
-    height: 1500px;
+    height: 1700px;
+    margin: auto;
+    margin: 40px;
 }
 
 .parametros-container {

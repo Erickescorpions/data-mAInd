@@ -4,6 +4,7 @@
 
 <script>
 export default {
+    emits: ['archivoValidado'],
     data() {
         return {
             error_archivo: {
