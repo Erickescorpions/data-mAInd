@@ -1,24 +1,22 @@
 <script setup>
 import axios from 'axios';
 import Chart from 'chart.js/auto';
+import File from './File.vue';
+import CSV from './CSV.vue';
 </script>
 
 <script>
     export default{
-        data(){
+        data() {
             return{
                 parametros:{
                     metrica : ''
                 },
-
-                error_archivo: {
-                    error: false,
-                    mensaje: ""
-                },
-
                 respuesta: null,
                 col_row : 0,
-                bandera : false
+                bandera : false,
+                file: null,
+                columnasNoRequeridas: null
             }
             
         },
@@ -31,16 +29,17 @@ import Chart from 'chart.js/auto';
 
         methods: {
             enviandoDatos(){
-                 // obtenemos el dataset proporcionado
-                const file = this.$refs.fileInput.files[0]
+                const formData = new FormData() ;
+                formData.append('file', this.file);
+                formData.append( 'metrica', this.parametros.metrica );
 
-                const formData = new FormData() 
-                formData.append('file', file)
-
-                formData.append( 'metrica', this.parametros.metrica )
+                if(this.columnasNoRequeridas) {
+                    formData.append('columnas_no_requeridas', JSON.stringify(this.columnasNoRequeridas));
+                }
+                
                 axios.post( 'http://127.0.0.1:8000/api/metricas', formData )
                     .then( response => this.guardandoDatos( response ) )
-                    .catch( error => console.log( error ) )
+                    .catch( error => console.log( error ) );
             },
 
             validandoArchivo(event) {
@@ -113,14 +112,8 @@ import Chart from 'chart.js/auto';
     <h1 class="titulo">Metricas de distancias</h1>
     <form @submit.prevent="enviandoDatos">
         <div class="contenedor">        
-            <p>Selecciona un dataset (*extension csv)</p>
-            <div class="slector">
-                <label for="dataset">Dataset: </label>
-                <input type="file" ref="fileInput" @change="validandoArchivo"/>
-                <span v-if="error_archivo.error">
-                    {{ error_archivo.mensaje }}
-                </span>
-            </div>
+            <File @archivoValidado="file => this.file = file" />
+            <CSV :file="file" @columnasNoRequeridas="data => this.columnasNoRequeridas = data" />
 
             <div class="selector">
                 <label for=""><strong>Seleccione la metrica de distancia que desea utilizar:</strong></label>
@@ -159,12 +152,24 @@ import Chart from 'chart.js/auto';
                 </div>
             </div>
         </form>
-        <div v-html="tablaHtml" class="contenedor"></div>
+        <!-- <div v-html="tablaHtml" class="contenedor"></div> -->
+
+        <v-table fixed-header height="500px">
+            <thead>
+            <tr>
+                <th></th>
+                <th class="text-left" v-for="(res, index) in respuesta[0]">{{ index }}</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(row, index) in respuesta" :key="index">
+                    <td>{{ index }}</td>
+                    <td v-for="cell in row">{{ cell.toFixed(3) }}</td>
+                </tr>
+            </tbody>
+        </v-table>
     </div>
-    
-
-
-  </template>
+</template>
   
   <style scoped>
   .titulo {
