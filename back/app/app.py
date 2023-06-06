@@ -1,10 +1,12 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
+import json
+
 from Apriori import Apriori
 from MetricasDistancia import MetricasDistancia
-from flask_cors import CORS
+from Clustering import Clustering
 
 import pandas as pd   
-import json
 
 ## creamos la aplicacion
 app = Flask(__name__)
@@ -182,8 +184,40 @@ def executeMetricas():
     except KeyError:
         return jsonify({
             "sucess": False,
-            "message": "Los parametros que se necesitan recibir son ['metrica' y opcionalmente un archivo como 'file]"
+            "message": "Los parametros que se necesitan recibir son ['metrica' y opcionalmente un archivo como 'file']"
         })
+    
+
+# Ruta Clustering jerarquico
+
+# Ruta para obtener la matriz imagen del mapa de calor de correlaciones
+@app.route('/api/clustering/correlaciones', methods=['POST'])
+def getMatrizCorrelaciones():
+    try:
+        file = None
+                
+        if 'file' in request.files:
+            file = request.files['file']
+        
+        if not file:
+            res = Clustering.generaMatrizCorrlaciones()
+        else: 
+            res = Clustering.generaMatrizCorrlaciones(file=file)
+
+        return send_file('../' + res, mimetype='image/png')
+    except KeyError: 
+        return jsonify({
+            "sucess": False,
+            "message": "Error"
+        })
+
+# Aplicacion del algoritmo jerarquico 
+# Recibe las columnas que se van a usar
+# Archivo
+# Tipo de estandarizacion
+# Metrica de distancia
+# Imagen de dendegrama
+# Centroides
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
