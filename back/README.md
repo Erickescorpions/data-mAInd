@@ -28,7 +28,7 @@ pip install -r requirements.txt
 ## Ejecucion
 Para ejecutar la aplicación, se tiene que ejecutar desde la carpeta principal del proyecto:
 ```
-python back\app\app.py
+python app\app.py
 ```
 
 Para desactivar el entorno virtual:
