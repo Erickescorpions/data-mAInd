@@ -154,6 +154,8 @@ def executeMetricas():
         valores_metricas = ['euclidean', 'chebyshev', 'cityblock', 'minkowski']
         metrica = ''
         columnas_no_requeridas = []
+        valores_estandarizacion = [ 'standardScaler', 'minMaxScaler' ]
+        estandarizacion = ''
 
         if 'metrica' in request.form:
             metrica = request.form['metrica']
@@ -166,17 +168,26 @@ def executeMetricas():
     
         if 'columnas_no_requeridas' in request.form: 
             columnas_no_requeridas = json.loads(request.form['columnas_no_requeridas'])
-            print(request.form['columnas_no_requeridas'])
+            # print(request.form['columnas_no_requeridas'])
 
         file = None
             
         if 'file' in request.files:
             file = request.files['file']
 
+        if 'estandarizacion' in request.form : 
+            estandarizacion = request.form['estandarizacion']
+
+        print ( estandarizacion )
+        
+    
         if not file:
-            res = MetricasDistancia.execute(metrica, columnas_no_requeridas=columnas_no_requeridas)
+            res = MetricasDistancia.execute(metrica, estandarizacion=estandarizacion, columnas_no_requeridas=columnas_no_requeridas )
         else: 
-            res = MetricasDistancia.execute(metrica, file=file, columnas_no_requeridas=columnas_no_requeridas)
+            res = MetricasDistancia.execute(metrica, estandarizacion=estandarizacion, file=file, columnas_no_requeridas=columnas_no_requeridas )
+
+      
+
 
         return jsonify(res)
     except KeyError:

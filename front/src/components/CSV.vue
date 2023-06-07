@@ -69,14 +69,16 @@ export default {
             Mostrar Datos
         </v-btn>
 
-        <div v-for="(item, index) in columnas" v-if="mostrar">
-            <v-checkbox
-                :label="item.columna"
-                v-model="item.requerida"
-                hide-details
-                @change="obteniendoDatos"
-            ></v-checkbox>
-        </div>
+        <v-row v-if="mostrar">
+            <v-col v-for="(item, index) in columnas" cols="4">
+                <v-checkbox
+                    :label="item.columna"
+                    v-model="item.requerida"
+                    hide-details
+                    @change="obteniendoDatos"
+                ></v-checkbox>
+            </v-col>
+        </v-row>
 
         <!-- Se muestra un modal -->
         <v-table fixed-header height="500px" v-if="mostrar">
