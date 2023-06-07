@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 class MetricasDistancia():
     @staticmethod
-    def execute(metrica, file=None, dataset="datos_prueba/metricas/Hipoteca.csv", columnas_no_requeridas=[]):         
+    def execute(metrica, estandarizacion, file=None, dataset="datos_prueba/metricas/Hipoteca.csv", columnas_no_requeridas=[] ):         
         # ejecucion del algoritmo 
         if file:
             #print('recibiendo archivo')
@@ -19,19 +19,30 @@ class MetricasDistancia():
         data = data.drop(columnas_no_numericas, axis=1)
 
         data = data.drop(columnas_no_requeridas, axis=1)
+        print( metrica)
+        print(columnas_no_requeridas)
         print(data)
 
-        # estandarizacion de datos  
-        estandarizar = StandardScaler()
-        data_estandarizada = estandarizar.fit_transform(data)
+        # estandarizacion de datos 
+        if estandarizacion == 'standardScaler' :
+            estandarizar = StandardScaler()
+        elif estandarizacion == 'minMaxScaler' :
+            estandarizar = MinMaxScaler()
+        else :
+            estandarizar = StandardScaler()
 
-        #print(data_estandarizada)
+        data_estandarizada = estandarizar.fit_transform(data)
+        
+
+        print(data_estandarizada)
 
         # matriz de distancias
         dst = cdist(data_estandarizada, data_estandarizada, metric=metrica)
-        dst = dst.tolist()
+        resultados = dst.tolist()
+        
 
         return {
             "sucess": True,
-            "distancias": dst
+            "distancias": resultados
+
         }
