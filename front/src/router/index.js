@@ -20,6 +20,11 @@ const router = createRouter({
       path: '/distancias',
       name : 'distancias',
       component: () => import( '../views/DistanciasView.vue' )
+    },
+    {
+      path: '/clustering',
+      name: 'clustering',
+      component: () => import('../views/ClusteringView.vue')
     }
   ]
 })

@@ -15,8 +15,8 @@ import { faBrain } from '@fortawesome/free-solid-svg-icons'
 library.add(faBrain)
 
 // Vuetify
-import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
+import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as labsComponents from 'vuetify/labs/components'
@@ -28,6 +28,7 @@ const vuetify = createVuetify({
         ...labsComponents,
       },
     directives,
+    ssr: true
 })
 
 const app = createApp(App)

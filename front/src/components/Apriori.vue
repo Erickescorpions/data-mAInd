@@ -4,7 +4,6 @@ import { required, numeric } from '@vuelidate/validators';
 import axios from 'axios';
 import Chart from 'chart.js/auto';
 import File from './File.vue';
-import { faTurkishLiraSign } from '@fortawesome/free-solid-svg-icons';
 </script>
 
 <script>
@@ -34,7 +33,7 @@ export default {
                 { title: 'Elevación', align: 'start', sortable: true, key: 'elevacion' },
             ],
             reglas: [],
-            itemsPerPage: 10,
+            itemsPerPage: 5,
             mostrarReglas: false
         }
     },
@@ -156,6 +155,7 @@ export default {
         },
 
         mostrandoDatos(res) {
+            console.log(res)
             let reglas_obtenidas = res.data.reglas;
             let size = Object.keys(reglas_obtenidas).length;
             this.reglas = [];

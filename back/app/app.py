@@ -1,10 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
+import json
+
 from Apriori import Apriori
 from MetricasDistancia import MetricasDistancia
-from flask_cors import CORS
+from Clustering import Clustering
 
-import pandas as pd   
-import json
+import pandas as pd
+import matplotlib
+matplotlib.use('agg')
 
 ## creamos la aplicacion
 app = Flask(__name__)
@@ -193,8 +197,76 @@ def executeMetricas():
     except KeyError:
         return jsonify({
             "sucess": False,
-            "message": "Los parametros que se necesitan recibir son ['metrica' y opcionalmente un archivo como 'file]"
+            "message": "Los parametros que se necesitan recibir son ['metrica' y opcionalmente un archivo como 'file']"
         })
+    
+
+# Ruta Clustering jerarquico
+
+# Ruta para obtener la matriz imagen del mapa de calor de correlaciones
+@app.route('/api/clustering/correlaciones', methods=['POST'])
+def getMatrizCorrelaciones():
+    try:
+        file = None
+                
+        if 'file' in request.files:
+            file = request.files['file']
+        
+        if not file:
+            res = Clustering.generaMatrizCorrlaciones()
+        else: 
+            res = Clustering.generaMatrizCorrlaciones(file=file)
+
+        return jsonify(res)
+    except KeyError: 
+        return jsonify({
+            "sucess": False,
+            "message": "Error"
+        })
+    
+@app.route('/api/clustering/image/<image_name>')
+def getImage(image_name):
+    return send_file(f'../image_tmp/{image_name}', mimetype='image/png')
+
+# Aplicacion del algoritmo jerarquico 
+# Recibe las columnas que se van a usar
+# Archivo
+# Tipo de estandarizacion
+# Metrica de distancia
+# Imagen de dendegrama
+# Centroides
+@app.route('/api/clustering/jerarquico', methods=['POST'])
+def obtenerArbolClusteringJerarquico():
+    metrica = request.form['metrica']
+    estandarizacion = request.form['estandarizacion']
+    columnas = json.loads(request.form['columnas'])
+
+    if 'file' in request.files:
+        file = request.files['file']
+    
+    if not file:
+        res = Clustering.obtenerArbol(metrica=metrica, estandarizacion=estandarizacion, columnas=columnas)
+    else: 
+        res = Clustering.obtenerArbol(file=file, metrica=metrica, estandarizacion=estandarizacion, columnas=columnas)
+    
+    return jsonify(res)
+
+@app.route('/api/clustering/jerarquico/centroides', methods=['POST'])
+def obteniendoClusters():
+    estandarizacion = request.form['estandarizacion']
+    columnas = json.loads(request.form['columnas'])
+    numero_clusters = request.form['numero_clusters']
+    metrica = request.form['metrica']
+
+    if 'file' in request.files:
+        file = request.files['file']
+    
+    if not file:
+        res = Clustering.obteniendoClusters(numero_clusters=numero_clusters, metrica=metrica, estandarizacion=estandarizacion, columnas=columnas)
+    else: 
+        res = Clustering.obteniendoClusters(file=file, numero_clusters=numero_clusters, metrica=metrica, estandarizacion=estandarizacion, columnas=columnas)
+    
+    return jsonify(res)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
