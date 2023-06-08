@@ -25,7 +25,12 @@ const router = createRouter({
       path: '/clustering',
       name: 'clustering',
       component: () => import('../views/ClusteringView.vue')
-    }
+    },
+    {
+      path: '/clustering-particional',
+      name: 'clustering-particional',
+      component: () => import('../views/ClusteringParticionalView.vue')
+    },
   ]
 })
 

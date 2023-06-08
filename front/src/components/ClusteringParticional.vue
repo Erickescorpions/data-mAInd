@@ -20,11 +20,9 @@ export default {
             estandarizacion: 'StandardScaler',
             tipoEstandarizacion: ['StandardScaler', 'MinMaxScaler'],
 
-            metrica: 'euclidean',
-            tipoMetrica: ['euclidean', 'chebyshev', 'cityblock', 'minkowski'],
-
-            dendograma: {
+            codo: {
                 image: null,
+                kneePoint: null,
                 mostrar: false
             },
 
@@ -57,19 +55,19 @@ export default {
                 .catch(error => console.log(error));
         },
 
-        obteniendoDendograma() {
+        obteniendoCodo() {
             const formData = new FormData();
-            this.numeroClusters = this.numeroColumnasSeleccionadas;
             formData.append('file', this.file);
             formData.append('metrica', this.metrica);
             formData.append('estandarizacion', this.estandarizacion);
             formData.append('columnas', JSON.stringify(this.columnas));
 
-            axios.post('http://127.0.0.1:8000/api/clustering/jerarquico', formData)
+            axios.post('http://127.0.0.1:8000/api/clustering/particional/codo', formData)
                 .then(response => {
                     console.log(response)
-                    this.dendograma.image = response.data.data.image;
-                    this.dendograma.mostrar = true;
+                    this.codo.image = response.data.data.image;
+                    this.codo.kneePoint = response.data.data.knee_point;
+                    this.codo.mostrar = true;
                 })
                 .catch(error => console.log(error))
         },
@@ -77,12 +75,11 @@ export default {
         obteniendoClusters() {
             const formData = new FormData();
             formData.append('file', this.file);
-            formData.append('metrica', this.metrica);
             formData.append('estandarizacion', this.estandarizacion);
             formData.append('columnas', JSON.stringify(this.columnasSeleccionadas));
             formData.append('numero_clusters', this.numeroClusters);
 
-            axios.post('http://127.0.0.1:8000/api/clustering/jerarquico/centroides', formData)
+            axios.post('http://127.0.0.1:8000/api/clustering/particional', formData)
                 .then(response => {
                     console.log(response);
                     this.centroides = JSON.parse(response.data.centroides);
@@ -113,6 +110,23 @@ export default {
                 El tipo de distancia es la metrica que se va utilizar para medir la similitud de los elementos.
             </p>
             <div class="wrapper">
+                <p>Selecciona las columnas mas relevantes:</p>
+                <div class="wrapper">
+                    <v-row>
+                        <v-col v-for="(item, index) in columnas" cols="3" :key="index">
+                            <v-checkbox
+                                v-model="columnasSeleccionadas"
+                                :value="item"
+                                :label="item"
+                                hide-details
+                                class="inline"
+                                @change="() => mostrarCentroides = false"
+                            ></v-checkbox>
+                        </v-col>
+                    </v-row>
+                    <p>Nota: minimo se necesitan escoger 4 columnas para ejecutar el algoritmo</p>
+                </div>
+
                 <v-select
                     label="Tipo de estandarización"
                     :items="tipoEstandarizacion"
@@ -121,26 +135,29 @@ export default {
                     v-model="estandarizacion"
                 ></v-select>
     
-                <v-select
-                    label="Metrica distancia"
-                    :items="tipoMetrica"
-                    variant="outlined"
-                    density="compact"
-                    v-model="metrica"
-                ></v-select>
-    
-                <v-btn variant="flat" v-on:click="obteniendoDendograma" class="btn float-right">Obtener Dendograma</v-btn>
+                <v-btn variant="flat" v-on:click="obteniendoCodo" class="btn float-right">Obtener Codo</v-btn>
             </div>
 
-            <div v-if="dendograma.mostrar">
+            <div v-if="codo.mostrar" class="wrapper">
                 <p>
-                    Cada color representado en el dendograma representa un cluster, se puede seleccionar el numero de clusters con los 
-                    cuales se necesita trabajar a partir de cortar el arbol en diferentes alturas. 
+                    Como metodo para seleccionar el numero de clusters, vamos a utilizar el metodo del codo. Es necesario identificar el valor de k 
+                    donde donde la distorsión (efecto del codo) cambia de manera significativa.
                 </p>
                 <div class="flex">
                     <div class="wrapper">
                         <div class="img-container">
-                            <img :src="dendograma.image" >
+                            <img :src="codo.image" >
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    Como apoyo, el knee point es un punto calculado que muestra donde es que la distorsion cambia de manera significativa.
+                </p>
+                <div class="flex">
+                    <div class="wrapper">
+                        <div class="img-container">
+                            <img :src="codo.kneePoint" >
                         </div>
                     </div>
                 </div>
@@ -151,22 +168,6 @@ export default {
                     <input type="range" min="0" max="10" step="1" class="slider" v-model="numeroClusters" @change="() => mostrarCentroides = false">
                     <input type="text" v-model="numeroClusters" class="numero-clusters-container" disabled>
 
-                    <p>Selecciona las columnas mas relevantes:</p>
-                    <div class="wrapper">
-                        <v-row>
-                            <v-col v-for="(item, index) in columnas" cols="3" :key="index">
-                                <v-checkbox
-                                    v-model="columnasSeleccionadas"
-                                    :value="item"
-                                    :label="item"
-                                    hide-details
-                                    class="inline"
-                                    @change="() => mostrarCentroides = false"
-                                ></v-checkbox>
-                            </v-col>
-                        </v-row>
-                        <p>Nota: minimo se necesitan escoger 4 columnas para ejecutar el algoritmo</p>
-                    </div>
 
                     <v-btn variant="flat" v-on:click="obteniendoClusters" class="btn float-right">Obtener Clusters</v-btn>
                 </div>

@@ -11,6 +11,9 @@ from sklearn.cluster import AgglomerativeClustering
 import secrets
 import hashlib
 import json
+from sklearn.cluster import KMeans
+from sklearn.metrics import pairwise_distances_argmin_min
+from kneed import KneeLocator
 
 class Clustering():
     @staticmethod
@@ -105,21 +108,18 @@ class Clustering():
             #print('default')
             data = pd.read_csv(dataset)
 
-        columnas_no_numericas = data.select_dtypes(exclude='number').columns
-        data = data.drop(columnas_no_numericas, axis=1)
-        nombre_columnas = data.columns.values.tolist()
-        data_np = np.array(data[nombre_columnas])
+        data_np = np.array(data[columnas])
+        new_data = data[columnas]
 
         if estandarizacion == 'StandardScaler': 
             estandarizar = StandardScaler() 
         else:
             estandarizar = MinMaxScaler()
 
+
         MEstandarizada = estandarizar.fit_transform(data_np)
         MJerarquico = AgglomerativeClustering(n_clusters=int(numero_clusters), linkage='complete', metric=metrica)
         MJerarquico.fit_predict(MEstandarizada)
-
-        new_data = data[columnas]
 
         new_data['clusterH'] = MJerarquico.labels_
         centroidesH = new_data.groupby('clusterH').mean()
@@ -128,3 +128,88 @@ class Clustering():
             "sucess": True,
             "centroides": centroidesH.to_json(orient='records')
         }
+    
+    @staticmethod
+    def obtenerCodo(estandarizacion, columnas, file=None, dataset="datos_prueba/apriori/movies.csv"):         
+        if file:
+            #print('recibiendo archivo')
+            data = pd.read_csv(file)
+        else:
+            #print('default')
+            data = pd.read_csv(dataset)
+        
+        # agarramos solo las columnas que seleccionamos
+        data = np.array(data[columnas])
+
+        if estandarizacion == 'StandardScaler': 
+            estandarizar = StandardScaler() 
+        else:
+            estandarizar = MinMaxScaler()
+
+        MEstandarizada = estandarizar.fit_transform(data)
+        
+        #Definición de k clusters para K-means
+        #Se utiliza random_state para inicializar el generador interno de números aleatorios
+        SSE = []
+        for i in range(2, 12):
+            km = KMeans(n_clusters=i, random_state=0)
+            km.fit(MEstandarizada)
+            SSE.append(km.inertia_)
+
+        #Se grafica SSE en función de k
+        plt.figure(figsize=(10, 7))
+        plt.plot(range(2, 12), SSE, marker='o')
+        plt.xlabel('Cantidad de clusters *k*')
+        plt.ylabel('SSE')
+        plt.title('Elbow Method')
+
+        temp_file = f'{Clustering.generar_hash_aleatorio()}.png'
+        # Guardar la figura en un archivo de imagen
+        plt.savefig(f'image_tmp/{temp_file}')
+        plt.close()
+
+        kl = KneeLocator(range(2, 12), SSE, curve="convex", direction="decreasing")
+        plt.style.use('ggplot')
+        temp_file2 = f'{Clustering.generar_hash_aleatorio()}.png'
+        # Guardar la figura en un archivo de imagen
+        kl.plot_knee()
+        plt.savefig(f'image_tmp/{temp_file2}')
+        plt.close()
+
+        return {
+            "sucess": True,
+            "data": {
+                "image": f"http://localhost:8000/api/clustering/image/{temp_file}",
+                "knee_point": f"http://localhost:8000/api/clustering/image/{temp_file2}"
+            }
+        }
+    
+    def obteniendoClustersParticional(numero_clusters, estandarizacion, columnas, file=None, dataset="datos_prueba/apriori/movies.csv"):
+        if file:
+            #print('recibiendo archivo')
+            data = pd.read_csv(file)
+        else:
+            #print('default')
+            data = pd.read_csv(dataset)
+
+        data_np = np.array(data[columnas])
+        new_data = data[columnas]
+
+        if estandarizacion == 'StandardScaler': 
+            estandarizar = StandardScaler() 
+        else:
+            estandarizar = MinMaxScaler()
+
+
+        MEstandarizada = estandarizar.fit_transform(data_np)
+        MParticional = KMeans(n_clusters=4, random_state=0).fit(MEstandarizada)
+        MParticional.predict(MEstandarizada)
+
+        new_data['clusterP'] = MParticional.labels_
+        centroidesP = new_data.groupby('clusterP').mean()
+
+        return {
+            "sucess": True,
+            "centroides": centroidesP.to_json(orient='records')
+        }
+    
