@@ -41,7 +41,7 @@ export default {
 </script>
 
 <template>
-    <p>Selecciona un dataset (*extension csv) o escoge entre los archivos predeterminados:</p>
+    <p>Selecciona un dataset (*extension csv):</p>
     <div class="file-container">
         <v-file-input 
             clearable label="File input" variant="outlined"
