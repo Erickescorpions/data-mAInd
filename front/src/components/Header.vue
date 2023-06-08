@@ -7,13 +7,14 @@ import { RouterLink } from 'vue-router'
         <div class="title-container">
             <h1 class="page-title">
                 Data MAInd 
-                <font-awesome-icon icon="fa-solid fa-brain" style="color: #fd26c3;" />
+                <font-awesome-icon icon="fa-solid fa-brain" style="color: white;" />
             </h1>
         </div>
         <nav>
             <RouterLink to="/">Home</RouterLink>
             <RouterLink to="/distancias">Distancias</RouterLink>
             <RouterLink to="/apriori">Apriori</RouterLink>
+            <RouterLink to="/clustering">Clustering</RouterLink>
         </nav>
     </header>
 </template>

@@ -67,3 +67,13 @@ h1 {
   color: white;
   margin: auto;
 }
+
+
+/* Backgrounds colors */
+ .bg-white {
+  background-color: white;
+}
+
+.bg-morado {
+  background-color: rgba(212, 205, 244, 0.3);
+}

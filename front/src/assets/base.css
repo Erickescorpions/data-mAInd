@@ -3,7 +3,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Gudea&display=swap');
 
 :root {
-    --main-color: #073B4C;
+    /* --main-color: #073B4C; */
+    --main-color: rgba(55, 34, 72, 0.9);
     --secondary-color: #7FBEEB;
 
     /* --card-color: #5C946E; */
