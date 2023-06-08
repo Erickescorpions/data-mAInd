@@ -257,4 +257,10 @@ export default {
 .mostrar {
     float: right;
 }
+
+.btn {
+  background-color: var(--main-color);
+  color: white;
+  margin: auto;
+}
 </style>

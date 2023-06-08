@@ -1,6 +1,5 @@
 <script setup>
 import axios from 'axios';
-import Chart from 'chart.js/auto';
 import File from './File.vue';
 import CSV from './CSV.vue';
 </script>
@@ -82,8 +81,6 @@ import CSV from './CSV.vue';
             buscarDistancia(){
                 this.distancia = this.respuesta[ this.punto1 ][ this.punto2 ];
             }
-
-            
         }
     }
 
@@ -115,23 +112,17 @@ import CSV from './CSV.vue';
 
                     <label for=""><strong>Seleccione el tipo de estandarización que desea emplear:</strong></label>
                     <v-select
-                    clearable
-                    hide-details="true"
-                    label="Selecciona"
-                    :items="['standardScaler', 'minMaxScaler']"
-                    variant="outlined"
-                    v-model="parametros.estandarizacion"
-                    name="estandarizacion" 
-                    id="estandarizacion"  
-                    @update:model-value="enviandoDatos"
-                    class="selector-container"
+                        clearable
+                        hide-details="true"
+                        label="Selecciona"
+                        :items="['standardScaler', 'minMaxScaler']"
+                        variant="outlined"
+                        v-model="parametros.estandarizacion"
+                        name="estandarizacion" 
+                        id="estandarizacion"  
+                        @update:model-value="enviandoDatos"
+                        class="selector-container"
                     ></v-select>
-                    <!-- <select name="metrica" id="metrica" v-model="parametros.metrica" @change="enviandoDatos">
-                    <option value="euclidean">Euclidiana</option>
-                    <option value="chebyshev">Chebyshev</option>
-                    <option value="cityblock">City block</option>
-                    <option value="minkowski">Minkowski</option>
-                    </select> -->
                 </div>
             </div>
         </form>
@@ -169,7 +160,6 @@ import CSV from './CSV.vue';
                     </div>
                 </div>
             </form>
-            <!-- <div v-html="tablaHtml" class="contenedor"></div> -->
 
             <v-table fixed-header height="500px">
                 <thead>
@@ -186,23 +176,12 @@ import CSV from './CSV.vue';
                 </tbody>
             </v-table>
 
-            <!-- <div>
-                <v-data-table-server
-                :headers="headers"
-                :items-per-page="itemsPerPage"
-                :total-items="totalItems"
-                :server-items-length="serverItemsLength"
-                :loading="loading"
-                @fetch-data="fetchData"
-                ></v-data-table-server>
-            </div> -->
         </div>
     </div>
 </template>
   
 <style scoped>
-
-  .titulo {
+.titulo {
     color: #d517cb;
     font-size: 40px;
     font-family: Arial, sans-serif;
@@ -210,12 +189,12 @@ import CSV from './CSV.vue';
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-top: 50px;
-  }
-  
-  .selector {
+}
+
+.selector {
     margin-top: 20px;
     text-align: center;
-  }
+}
 
 .titulo {
     color: #d517cb;
@@ -225,11 +204,17 @@ import CSV from './CSV.vue';
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-top: 50px;
-  }
-  
-  .selector {
+}
+
+.selector {
     margin-top: 30px;
     text-align: center;
-  }
+}
+
+.btn {
+    background-color: var(--main-color);
+    color: white;
+    margin: auto;
+}
 
 </style>
