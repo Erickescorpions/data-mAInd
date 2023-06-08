@@ -2,8 +2,9 @@
 import { RouterLink } from 'vue-router'
 </script>
 
+
 <template>
-    <header class="rounded-shaped">
+    <header class="header-seguidor">
         <div class="title-container">
             <h1 class="page-title">
                 Data MAInd 
@@ -20,10 +21,23 @@ import { RouterLink } from 'vue-router'
 
 <style scoped>
 header {
-  line-height: 1.5;
+  line-height: .1;
   max-height: 100vh;
   text-align: center;
 }
+
+.header-seguidor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+.hide {
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
 
 nav {
   width: 100%;

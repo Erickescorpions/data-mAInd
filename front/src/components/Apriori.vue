@@ -237,6 +237,10 @@ export default {
 </template>
 
 <style scoped>
+
+.my-container{
+    margin-top: 70px;
+}
 .chart-container {
     display: none;
     height: 1700px;
