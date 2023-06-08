@@ -268,5 +268,36 @@ def obteniendoClusters():
     
     return jsonify(res)
 
+@app.route('/api/clustering/particional/codo', methods=['POST'])
+def obtenerCodo():
+    estandarizacion = request.form['estandarizacion']
+    columnas = json.loads(request.form['columnas'])
+
+    if 'file' in request.files:
+        file = request.files['file']
+    
+    if not file:
+        res = Clustering.obtenerCodo(estandarizacion=estandarizacion, columnas=columnas)
+    else: 
+        res = Clustering.obtenerCodo(file=file, estandarizacion=estandarizacion, columnas=columnas)
+    
+    return jsonify(res)
+
+@app.route('/api/clustering/particional', methods=['POST'])
+def clusteringParticional():
+    estandarizacion = request.form['estandarizacion']
+    columnas = json.loads(request.form['columnas'])
+    numero_clusters = request.form['numero_clusters']
+
+    if 'file' in request.files:
+        file = request.files['file']
+    
+    if not file:
+        res = Clustering.obteniendoClustersParticional(numero_clusters=numero_clusters, estandarizacion=estandarizacion, columnas=columnas)
+    else: 
+        res = Clustering.obteniendoClustersParticional(file=file, numero_clusters=numero_clusters, estandarizacion=estandarizacion, columnas=columnas)
+    
+    return jsonify(res)
+
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

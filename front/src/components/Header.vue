@@ -13,9 +13,10 @@ import { RouterLink } from 'vue-router'
         </div>
         <nav>
             <RouterLink to="/">Home</RouterLink>
-            <RouterLink to="/distancias">Distancias</RouterLink>
             <RouterLink to="/apriori">Apriori</RouterLink>
-            <RouterLink to="/clustering">Clustering</RouterLink>
+            <RouterLink to="/distancias">Distancias</RouterLink>
+            <RouterLink to="/clustering">Clustering Jerarquico</RouterLink>
+            <RouterLink to="/clustering-particional">Clustering Particional</RouterLink>
         </nav>
     </header>
 </template>
