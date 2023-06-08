@@ -34,7 +34,8 @@ export default {
             ],
             reglas: [],
             itemsPerPage: 5,
-            mostrarReglas: false
+            mostrarReglas: false,
+            showParametros: false
         }
     },
 
@@ -50,10 +51,14 @@ export default {
 
     methods: {
         cargandoArchivo(file) {
+            if(!file) {
+                this.showParametros = false;
+                return;
+            }
             const formData = new FormData();
             formData.append('file', file);
             this.file = file;
-
+            this.showParametros = true;
             this.reglas = null;
             this.mostrarReglas = false;
 
@@ -114,7 +119,7 @@ export default {
                         },
                         title: {
                             display: true,
-                            text: 'Frecuencia de los datos en cada regla de asociacion'
+                            text: 'Frecuencia de los datos'
 
                         },
                     }
@@ -180,47 +185,65 @@ export default {
         <File @archivoValidado="cargandoArchivo"/>
 
         <!-- Seccion de grafica de frecuencia -->
-        <v-btn variant="flat" v-on:click="toggleChart" v-if="chart_frecuencia" class="btn mostrar">
-            {{mostrarFrecuencia ? 'Esconder' : 'Mostrar'}} Frecuencia
-        </v-btn>
+        <div class="wrapper">
+            <v-btn variant="flat" v-on:click="toggleChart" v-if="chart_frecuencia" class="btn mostrar">
+                {{mostrarFrecuencia ? 'Esconder' : 'Mostrar'}} Frecuencia
+            </v-btn>
+        </div>
 
         <div id="frecuencia-container" class="chart-container">
             <canvas id="frecuencia"> </canvas>
         </div>
 
-        <p>Agrega los parametros para aplicar al algoritmo:</p>
-        <div class="parametros-container">
-            <div class="input-container">
-                <v-text-field 
-                    label="Elevacion minima" type="numeric" variant="outlined" clearable hide-details="true"
-                    v-model="parametros.elevacion" class="input"
-                ></v-text-field>
-                <span v-if="v$.parametros.elevacion.$error" class="error-msg">
-                    {{ v$.parametros.elevacion.$errors[0].$message }}
-                </span>
-            </div>
-            
-            <div class="input-container">
-                <v-text-field
-                    label="Confianza minima" type="numeric" variant="outlined" clearable hide-details="true"
-                    v-model="parametros.confianza" class="input"
-                ></v-text-field>
-                <span v-if="v$.parametros.confianza.$error" class="error-msg">
-                    {{ v$.parametros.confianza.$errors[0].$message }}
-                </span>
-            </div>
+        <div v-if="showParametros">
 
-            <div class="input-container">
-                <v-text-field
-                    label="Soporte minimo" type="numeric" variant="outlined" clearable hide-details="true"
-                    v-model="parametros.soporte" class="input"
-                ></v-text-field>
-                <span v-if="v$.parametros.soporte.$error" class="error-msg">
-                    {{ v$.parametros.soporte.$errors[0].$message }}
-                </span>
+            <div class="contenedor-texto bg-morado">
+                <p><strong>Obtención de las reglas de asociación</strong></p>
+                <p>
+                    <strong>Soporte (Cobertura).</strong> Indica cuan importante es una regla dentro del total de transacciones.
+                </p>
+                <p>
+                    <strong>Confianza.</strong> Indica que tan fiable es una regla.
+                </p>
+                <p>
+                    <strong>Lift (Elevación, Interés).</strong> Indica el nivel de relación (aumento de posibilidad) entre el antecedente y consecuente de la regla. Lift &#60; 1 (Relación negativa), Lift = 1 (Independientes), Lift > 1 (Relación positiva).
+                </p>
             </div>
-            
-            <v-btn variant="flat" v-on:click="enviandoDatos" class="btn">Obtener Reglas</v-btn>
+    
+            <p>Agrega los parametros para aplicar al algoritmo:</p>
+            <div class="parametros-container">
+                <div class="input-container">
+                    <v-text-field 
+                        label="Elevacion minima" type="numeric" variant="outlined" clearable hide-details="true"
+                        v-model="parametros.elevacion" class="input"
+                    ></v-text-field>
+                    <span v-if="v$.parametros.elevacion.$error" class="error-msg">
+                        {{ v$.parametros.elevacion.$errors[0].$message }}
+                    </span>
+                </div>
+                
+                <div class="input-container">
+                    <v-text-field
+                        label="Confianza minima" type="numeric" variant="outlined" clearable hide-details="true"
+                        v-model="parametros.confianza" class="input"
+                    ></v-text-field>
+                    <span v-if="v$.parametros.confianza.$error" class="error-msg">
+                        {{ v$.parametros.confianza.$errors[0].$message }}
+                    </span>
+                </div>
+    
+                <div class="input-container">
+                    <v-text-field
+                        label="Soporte minimo" type="numeric" variant="outlined" clearable hide-details="true"
+                        v-model="parametros.soporte" class="input"
+                    ></v-text-field>
+                    <span v-if="v$.parametros.soporte.$error" class="error-msg">
+                        {{ v$.parametros.soporte.$errors[0].$message }}
+                    </span>
+                </div>
+                
+                <v-btn variant="flat" v-on:click="enviandoDatos" class="btn">Obtener Reglas</v-btn>
+            </div>
         </div>
         
         <!-- Seccion tabla de reglas generadas -->

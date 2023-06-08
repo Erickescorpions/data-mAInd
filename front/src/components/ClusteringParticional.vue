@@ -95,8 +95,7 @@ export default {
     <div class="my-container">
         <File @archivoValidado="cargandoArchivo"/>
         <div v-if="heatmap.mostrar">
-            <p>Mapa de calor de las correlaciones de las columnas. El color representa el tipo de correlación, mientras más intenso sea el color, la correlación será más fuerte, mientras más claro, será más débil.</p>
-            <p></p>
+            <p class="contenedor-texto bg-morado">Mapa de calor de las correlaciones de las columnas. El color representa el tipo de correlación, mientras más intenso sea el color, la correlación será más fuerte, mientras más claro, será más débil.</p>
             <div class="wrapper flex">
                 <div class="wrapper">
                     <div class="img-container">
@@ -105,7 +104,7 @@ export default {
                 </div>
             </div>
             
-            <p>
+            <p class="contenedor-texto bg-morado">
                 El tipo de estandarizacion se utilizara para que las variables tengan el mismo peso. De esta manera ninguna variable influira mas en los resultados que otras.
                 El tipo de distancia es la metrica que se va utilizar para medir la similitud de los elementos.
             </p>
@@ -139,7 +138,7 @@ export default {
             </div>
 
             <div v-if="codo.mostrar" class="wrapper">
-                <p>
+                <p class="contenedor-texto bg-morado">
                     Como metodo para seleccionar el numero de clusters, vamos a utilizar el metodo del codo. Es necesario identificar el valor de k 
                     donde donde la distorsión (efecto del codo) cambia de manera significativa.
                 </p>
@@ -151,7 +150,7 @@ export default {
                     </div>
                 </div>
 
-                <p>
+                <p class="contenedor-texto bg-morado">
                     Como apoyo, el knee point es un punto calculado que muestra donde es que la distorsion cambia de manera significativa.
                 </p>
                 <div class="flex">
