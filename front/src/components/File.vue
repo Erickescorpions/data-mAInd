@@ -46,16 +46,9 @@ export default {
         <v-file-input 
             clearable label="File input" variant="outlined"
             :disabled="fileSelected ? true : false" hide-details="true"
-            ref="fileInput" @change="validandoArchivo" 
+            ref="fileInput" @change="validandoArchivo"
+            density="compact"
         ></v-file-input>
-        <v-select
-            clearable
-            hide-details="true"
-            label="Selecciona"
-            :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
-            variant="outlined"
-            v-model="fileSelected"
-        ></v-select>
     </div>
     <span v-if="error_archivo.error" class="error-msg">
         {{ error_archivo.mensaje }}
