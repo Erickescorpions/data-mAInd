@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 
 
 <template>
-    <header class="header-seguidor">
+    <header class="header header-seguidor">
         <div class="title-container">
             <h1 class="page-title">
                 Data MAInd 
@@ -21,11 +21,6 @@ import { RouterLink } from 'vue-router'
 </template>
 
 <style scoped>
-header {
-  line-height: .1;
-  max-height: 100vh;
-  text-align: center;
-}
 
 .header-seguidor {
   position: fixed;

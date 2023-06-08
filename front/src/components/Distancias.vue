@@ -90,8 +90,8 @@ import CSV from './CSV.vue';
 </script>
 
 <template>
-    <div class="contenido">
-        <h1 class="titulo">Metricas de distancias</h1>
+    <div class="my-container">
+        <!-- <h1 class="titulo">Metricas de distancias</h1> -->
         <form>
             <div class="contenedor">        
                 <File @archivoValidado="file => this.file = file" />
@@ -201,10 +201,6 @@ import CSV from './CSV.vue';
 </template>
   
 <style scoped>
-
-    .contenido{
-        margin-top: 100px;
-    }
 
   .titulo {
     color: #d517cb;
