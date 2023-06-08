@@ -2,10 +2,6 @@
 
 </script>
 
-<script>
-
-</script>
-
 <template>
   <main class="container">
     <section id="inicio">
@@ -17,11 +13,7 @@
             </h1>
             <p class="cuerpo">Proporciona tus dataseet y nosotros te damos el analisis</p>
           </div>
-          <div class="image-slider">
-            <button class="arrow-button" @click="prevImage">←</button>
-            <img :src="currentImage" class="slider-image">
-            <button class="arrow-button" @click="nextImage">→</button>
-          </div>
+          <div class="i-icon"><i class="fa-solid fa-computer fa-beat fa-10x"></i></div>
         </div>
       </div> 
     </section>
@@ -30,13 +22,10 @@
 
       <section class="card apriori-card">
         <div class="container">
-          <div class="apriori-image">
-            <img src="" alt="Imagen de apriori">
-          </div>
           <div class="container-apriori">
             <div class="title-apriori">
               <h1 class="apriori-title">Apriori</h1>
-              <p class="cuerpo-apriori">
+              <strong><p class="cuerpo-apriori">
                 El algoritmo Apriori es un algoritmo de minería de datos utilizado en el campo 
                 del aprendizaje automático y la extracción de reglas de asociación. Su objetivo 
                 principal es descubrir patrones frecuentes en conjuntos de datos transaccionales 
@@ -53,9 +42,10 @@
                 ocurre B con una cierta probabilidad". Estas reglas pueden ser utilizadas para 
                 realizar recomendaciones, tomar decisiones o comprender mejor los patrones y 
                 comportamientos en los datos.
-              </p>
+              </p></strong>
               <!-- <a href="/apriori" class="card-link">Probar algoritmo</a> -->
             </div>
+            <div class="a-icon"><i class="fa-solid fa-chart-gantt fa-bounce fa-10x"></i></div>
           </div>
         </div>
       </section>
@@ -65,7 +55,7 @@
           <div class="container-metricas">
             <div class="title-metricas">
               <h1 class="metricas-title">Metricas de distancias</h1>
-              <p class="cuerpo-metricas">
+              <strong><p class="cuerpo-metricas">
                 Los algoritmos de métricas de distancias son técnicas utilizadas en el campo de 
                 la minería de datos y el aprendizaje automático para medir la similitud o la 
                 diferencia entre dos objetos o conjuntos de datos. Estas métricas permiten 
@@ -82,9 +72,10 @@
                 disimilitud. Esto es útil en tareas como la clasificación de imágenes, el 
                 agrupamiento de documentos, la recomendación de productos y la búsqueda de 
                 información relevante.
-              </p>
+              </p></strong>
               <!-- <a href="/distancias" class="card-link">Probar algoritmo</a> -->
             </div>
+            <div class="m-icon"><i class="fa-solid fa-table fa-flip fa-10x"></i></div>
           </div>
         </div>
       </section>
@@ -94,7 +85,7 @@
           <div class="container-clustering">
             <div class="title-clustering">
               <h1 class="clustering-title">Clustering</h1>
-              <p class="cuerpo-clustering">
+              <strong><p class="cuerpo-clustering">
                 El algoritmo de clustering es una técnica de aprendizaje automático no 
                 supervisado que se utiliza para agrupar un conjunto de datos en diferentes 
                 grupos o clústeres. El objetivo principal del clustering es encontrar patrones 
@@ -113,9 +104,10 @@
                 ocultos, identificar grupos similares y comprender la estructura subyacente de 
                 los datos, lo que puede proporcionar información valiosa para la toma de 
                 decisiones y la generación de conocimiento.
-              </p>
+              </p></strong>
               <!-- <a href="/" class="card-link">Probar algoritmo</a> -->
             </div>
+            <div class="c-icon"><i class="fa-solid fa-chart-line fa-beat-fade fa-10x"></i></div>
           </div>
         </div>
       </section>
@@ -125,7 +117,7 @@
           <div class="container-arboles">
             <div class="title-arboles">
               <h1 class="arboles-title">Arboles de decisión</h1>
-              <p class="cuerpo-arboles">
+              <strong><p class="cuerpo-arboles">
                 Los árboles de decisión son un tipo de algoritmo de aprendizaje automático 
                 utilizado para modelar y predecir resultados basados en reglas de decisión. 
                 Este algoritmo se basa en la estructura de un árbol, donde cada nodo representa 
@@ -143,9 +135,10 @@
                 a su capacidad para manejar datos numéricos y categóricos, su interpretabilidad 
                 y su capacidad para manejar conjuntos de datos grandes. Además, pueden ser 
                 utilizados tanto en problemas de clasificación como en problemas de regresión.
-              </p>
+              </p></strong>
               <!-- <a href="/" class="card-link">Probar algoritmo</a> -->
             </div>
+            <div class="ar-icon"><i class="fa-solid fa-tree fa-shake fa-10x"></i></div>
           </div>
         </div>
       </section>
@@ -159,7 +152,7 @@
     padding-top: 55px;
     padding-bottom: 75px;
     background-color: #000000;
-    background-image: url(https://f.odnos.app/f/644abd716219a7vpgeoRLtNtriangles14301051280.webp);
+    background-image: linear-gradient(to right, red, blue, indigo, violet);
     color: #ffffff;
     box-shadow: 0 0 10px rgba(222, 21, 205, 0.5);
     margin-top: -38px;
@@ -172,6 +165,14 @@
 }
 
 .title-container{
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  width: 50%;
+  
+}
+
+.i-icon{
   margin-top: 1.25rem;
   margin-bottom: 1.25rem;
   text-align: center;
@@ -204,6 +205,13 @@
   width: 50%;  
 }
 
+.a-icon{
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  width: 50%;  
+}
+
 .cuerpo-apriori {
   font-size: 16px;
   color: hwb(0 0% 100%);
@@ -223,25 +231,18 @@
   padding-top: 55px;
   padding-bottom: 75px;
   border: none;
+  background-image: linear-gradient(to right, #43a7f89c, #04128e);
 
 }
 
 .apriori-title {
   font-size: 100px;
   font-weight: bolder;
-  color: #18367c;
-}
-
-.apriori-image{
-  width: 10px;
-  height: 100px; 
-  background-color: #f0f0f0; 
-  position: relative; 
-
+  color: #020817;
 }
 
 .metricas-card {
-  background-color:rgba(235, 233, 233, 0.492);
+  background-image: linear-gradient(to right, #d5458bdc, #26085b);
   width: 100%;
   border: none;
 }
@@ -260,6 +261,15 @@
   width: 50%;  
 }
 
+.m-icon{
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  width: 50%;  
+}
+
+
+
 .container-metricas{
   display: flex;
   flex-wrap: wrap;
@@ -272,7 +282,7 @@
 }
 
 .clustering-card {
-  background-color: #ffffff39;
+  background-image: linear-gradient(to right, #4B0082, #9962cd);
   width: 100%;
   border: none;
 }
@@ -285,6 +295,13 @@
 
 .title-clustering{
   color: #000000;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  width: 50%;  
+}
+
+.c-icon{
   margin-top: 1.25rem;
   margin-bottom: 1.25rem;
   text-align: center;
@@ -304,7 +321,7 @@
 }
 
 .arboles-card {
-  background-color: #00000097;
+  background-image: linear-gradient(to right, #91373775, #f93d3d);
   width: 100%;
   border: none;
 }
@@ -323,6 +340,13 @@
   width: 50%;  
 }
 
+.ar-icon{
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  width: 50%;  
+}
+
 .container-arboles{
   display: flex;
   flex-wrap: wrap;
@@ -330,7 +354,7 @@
 }
 .cuerpo-arboles {
   font-size: 16px;
-  color: hwb(0 100% 0% / 0.759);
+  color: hwb(0 4% 96% / 0.759);
   margin-bottom: 20px;
 }
 .card {
@@ -354,28 +378,6 @@
 .card p {
   font-size: 16px;
   margin-bottom: 20px;
-}
-.image-slider {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
+} 
 
-.slider-image {
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  
-}
-
-.arrow-button {
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  color: #fff;
-  cursor: pointer;
-  padding: 5px;
-  margin: 0 10px;
-}
 </style>

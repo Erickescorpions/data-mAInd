@@ -22,6 +22,9 @@ import * as components from 'vuetify/components'
 import * as labsComponents from 'vuetify/labs/components'
 import * as directives from 'vuetify/directives'
 
+import '@fortawesome/fontawesome-free/css/all.css';
+import '@fortawesome/fontawesome-free/js/all.js';
+
 const vuetify = createVuetify({
     components: {
         ...components,
