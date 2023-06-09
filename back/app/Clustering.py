@@ -202,7 +202,7 @@ class Clustering():
 
 
         MEstandarizada = estandarizar.fit_transform(data_np)
-        MParticional = KMeans(n_clusters=4, random_state=0).fit(MEstandarizada)
+        MParticional = KMeans(n_clusters=int(numero_clusters), random_state=0).fit(MEstandarizada)
         MParticional.predict(MEstandarizada)
 
         new_data['clusterP'] = MParticional.labels_
