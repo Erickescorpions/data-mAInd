@@ -106,7 +106,6 @@ import CSV from './CSV.vue';
                     v-model="parametros.metrica"
                     name="metrica" 
                     id="metrica"  
-                    @update:model-value="enviandoDatos"
                     class="selector-container"
                     ></v-select>
 
@@ -120,27 +119,30 @@ import CSV from './CSV.vue';
                         v-model="parametros.estandarizacion"
                         name="estandarizacion" 
                         id="estandarizacion"  
-                        @update:model-value="enviandoDatos"
                         class="selector-container"
                     ></v-select>
                 </div>
+
             </div>
+            <v-btn variant="flat" v-on:click="enviandoDatos" class="btn">Obtener Matriz Distancias</v-btn>
         </form>
 
         <div v-if="bandera">
             <div class="selector">
-            <label class=""><strong>Ingrese los puntos especificos para ver su distancia:</strong></label>
-            <v-text-field 
-            label="Punto 1" type="numeric" variant="outlined" clearable hide-details="true"
-            v-model="punto1" class="input" @update:model-value="buscarDistancia"
-            ></v-text-field>
-
-            <v-text-field 
-            label="Punto 2" type="numeric" variant="outlined" clearable hide-details="true"
-            v-model="punto2" class="input" @update:model-value="buscarDistancia"
-            ></v-text-field>
-            <h2 v-if="punto1 && punto2">La distancia entre el punto {{ punto1 }} y el punto {{ punto2 }} es: <es:labe> {{ distancia }} </es:labe></h2>
-        </div>
+                <label class=""><strong>Ingrese los puntos especificos para ver su distancia:</strong></label>
+                <div class="flex">
+                    <v-text-field 
+                    label="Punto 1" type="numeric" variant="outlined" clearable hide-details="true"
+                    v-model="punto1" class="input" @update:model-value="buscarDistancia"
+                    ></v-text-field>
+    
+                    <v-text-field 
+                    label="Punto 2" type="numeric" variant="outlined" clearable hide-details="true"
+                    v-model="punto2" class="input" @update:model-value="buscarDistancia"
+                    ></v-text-field>
+                </div>
+                <h2 v-if="punto1 && punto2">La distancia entre el punto {{ punto1 }} y el punto {{ punto2 }} es: <es:labe> {{ distancia }} </es:labe></h2>
+            </div>
             <form>
                 <div class="contenedor">        
                     <div class="selector">
@@ -191,6 +193,10 @@ import CSV from './CSV.vue';
     margin-top: 50px;
 }
 
+.contenedor {
+    margin-bottom: 20px;
+}
+
 .selector {
     margin-top: 20px;
     text-align: center;
@@ -215,6 +221,13 @@ import CSV from './CSV.vue';
     background-color: var(--main-color);
     color: white;
     margin: auto;
+}
+
+.flex {
+    display: flex;
+    gap: 10px;
+    justify-content: space-around;
+    margin: 10px;
 }
 
 </style>

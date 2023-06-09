@@ -131,7 +131,7 @@ export default {
                 <v-btn variant="flat" v-on:click="obteniendoDendograma" class="btn float-right">Obtener Dendograma</v-btn>
             </div>
 
-            <div v-if="dendograma.mostrar">
+            <div v-if="dendograma.mostrar" class="wrapper">
                 <p class="contenedor-texto bg-morado">
                     Cada color representado en el dendograma representa un cluster, se puede seleccionar el numero de clusters con los 
                     cuales se necesita trabajar a partir de cortar el arbol en diferentes alturas. 

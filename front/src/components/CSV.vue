@@ -96,3 +96,11 @@ export default {
         
     </div>
 </template>
+
+<style scoped>
+.btn {
+    background-color: var(--main-color);
+    color: white;
+    margin: auto;
+}
+</style>
