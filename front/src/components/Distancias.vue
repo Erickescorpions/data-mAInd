@@ -9,8 +9,8 @@ import CSV from './CSV.vue';
         data() {
             return{
                 parametros:{
-                    metrica : '',
-                    estandarizacion : ''
+                    metrica : 'euclidean',
+                    estandarizacion : 'standardScaler'
                 },
                 respuesta: null,
                 bandera : false,
