@@ -1,29 +1,13 @@
-# front
+## Instrucciones
 
-This template should help get you started developing with Vue 3 in Vite.
+Las instrucciones se deben de correr sobre la ruta de la carpeta front/
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
+Para ejecutar el servidor frontend primero necesitas instalar las dependencias
+```
 npm install
 ```
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
+Para ejecutar el servidor de desarrollo:
 ```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
+npm run dev
 ```
